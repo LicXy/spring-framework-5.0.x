@@ -13,13 +13,13 @@ public class UserServiceImpl implements  UserService{
 	private UserDao userDao;
 
 	public UserServiceImpl() {
-		System.out.println("构造方法执行");
+		System.out.println("UserServiceImpl: 构造方法执行");
 	}
 
 
 	@PostConstruct
 	public void init(){
-		System.out.println("自定义初始化方法执行");
+		System.out.println("UserServiceImpl: 自定义初始化方法执行");
 	}
 
 	@Override

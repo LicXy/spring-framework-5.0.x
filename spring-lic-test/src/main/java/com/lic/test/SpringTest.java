@@ -12,26 +12,25 @@ public class SpringTest {
 
 	public static void main(String[] args) {
 		/**
-		 * 1. 应用上下文初始化方式一
+		 * 1. 应用上下文初始化方式(一)
 		 */
 		AnnotationConfigApplicationContext annotationConfigApplicationContext =
 				new AnnotationConfigApplicationContext(AppConfig.class);
-		UserService userService = annotationConfigApplicationContext.getBean(UserService.class);
-		userService.query();
+		//UserService userService = annotationConfigApplicationContext.getBean(UserService.class);
+		//userService.query();
 
 		/**
-		 * 2. 应用上下文初始化方式二
+		 * 2. 应用上下文初始化方式(二)
 		 */
-		ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("bean.xml");
+		ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("springConf.xml");
 		UserService userService1 = (UserService) applicationContext1.getBean("xxx");
 		userService1.query();
-
 		/**
-		 * 3(已过时). 应用上下文初始化方式三
+		 * 3(已过时). 应用上下文初始化方式(三)
 		 */
-		XmlBeanFactory bf = new XmlBeanFactory(new ClassPathResource("bean.xml"));
+		/*XmlBeanFactory bf = new XmlBeanFactory(new ClassPathResource("bean.xml"));
 		UserService userService2 = (UserService) bf.getBean("xxx");
-		userService2.query();
+		userService2.query();*/
 
 
 
