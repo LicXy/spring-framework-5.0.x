@@ -115,19 +115,20 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 	 */
 	public AnnotationConfigApplicationContext(Class<?>... annotatedClasses) {
 		/**
-		 * 1. 初始化上下文环境
+		 * 1. 初始化上下文环境  --> 完成了Spring内部定义的BeanFactory后处理器的注册
 		 * 2. 初始化注解bean定义解析器和类路径bean定义扫描器
 		 */
 		this();
 
 		/**
-		 * 根据提供的类路径去注册bean信息
-		 * 程序执行到这步时, 只将手动提供的annotatedClasses和Spring内部的BeanDefinition注册到beanFactory中去,
+		 * 程序执行到这步之前, Spring内部的BeanDefinition(BeanFactory后处理器)已经注册到beanFactory中;
+		 * 该步骤只是将手动提供的annotatedClasses(配置类)也注册到beanFactory中;
 		 * 其他的注解bean还没有被注册, 整个注册过程刚刚开始
+		 * 其他的注解bean是在激活后处理器中的方法时, 对配置类进行解析, 解析到@ComponentScan注解中的包路径后才进行解析注册
 		 */
 		register(annotatedClasses);
 
-		//环境刷新(包扫描,注册BeanDefinition信息)
+		//环境刷新
 		refresh();
 	}
 

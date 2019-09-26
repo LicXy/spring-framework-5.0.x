@@ -36,6 +36,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationConfigUtils;
+import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
@@ -53,11 +54,13 @@ final class PostProcessorRegistrationDelegate {
 	 * 1. 执行自定义的实现BeanDefinitionRegistryPostProcessor接口时重写的postProcessBeanDefinitionRegistry()方法
 	 *
 	 * 2. 执行Spring内部的实现BeanDefinitionRegistryPostProcessor接口时重写的postProcessBeanDefinitionRegistry()方法
+	 *  {@link PostProcessorRegistrationDelegate#invokeBeanDefinitionRegistryPostProcessors(Collection, BeanDefinitionRegistry)}
 	 *
 	 * 3. 执行自定义的实现BeanDefinitionRegistryPostProcessor接口和BeanFactoryPostProcessor接口时重写的postProcessBeanFactory()方法
 	 * 	 和Spring内部的实现BeanDefinitionRegistryPostProcessor接口时重写的postProcessBeanFactory()方法
 	 *
 	 * 4. 执行Spring内部实现BeanFactoryPostProcessor接口的处理器中的postProcessBeanFactory()方法
+	 * {@link PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(Collection, ConfigurableListableBeanFactory)}
 	 *
 	 *
 	 */
@@ -118,7 +121,7 @@ final class PostProcessorRegistrationDelegate {
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
 
 			/**
-			 * 2.1 首先，调用实现priorityorated的BeanDefinitionRegistryPostProcessor
+			 * 2.1 首先，调用实现PriorityOrdered的BeanDefinitionRegistryPostProcessor
 			 *     根据BeanDefinitionRegistryPostProcessor.class获取所有实现BeanDefinitionRegistryPostProcessor接口的beanName;
 			 *     getBeanNamesForType()
 			 *    {@link DefaultListableBeanFactory#getBeanNamesForType(java.lang.Class, boolean, boolean)}
@@ -138,9 +141,11 @@ final class PostProcessorRegistrationDelegate {
 			 *
 			 * ConfigurationClassPostProcessor那么这个类能干嘛呢？    ----> 很重要
 			 * Spring使用ConfigurationClassPostProcessor完成对注解的扫描
-			 * ConfigurationClassPostProcessor调用postProcessBeanDefinitionRegistry()方法中的processConfigBeanDefinitions(registry)方法
-			 *    (1).{@link PostProcessorRegistrationDelegate#invokeBeanDefinitionRegistryPostProcessors(Collection, BeanDefinitionRegistry)}
-			 *    (2).{@link org.springframework.context.annotation.ConfigurationClassPostProcessor#processConfigBeanDefinitions}
+			 * (1) ConfigurationClassPostProcessor调用postProcessBeanDefinitionRegistry()方法
+			 *    {@link PostProcessorRegistrationDelegate#invokeBeanDefinitionRegistryPostProcessors(Collection, BeanDefinitionRegistry)}
+			 * (2) 在步骤四中ConfigurationClassPostProcessor调用postProcessBeanFactory()方法
+			 *    {@link PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(Collection, BeanDefinitionRegistry)}
+			 *
 			 */
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
@@ -221,9 +226,7 @@ final class PostProcessorRegistrationDelegate {
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
 		}
 
-		/**
-		 *   如果该注册器是没有实现BeanDefinitionRegistry接口
-		 */
+		// 如果该注册器是没有实现BeanDefinitionRegistry接口
 		else {
 			// 调用用上下文实例注册的工厂处理器
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
@@ -385,9 +388,10 @@ final class PostProcessorRegistrationDelegate {
 
 		for (BeanDefinitionRegistryPostProcessor postProcessor : postProcessors) {
 			/**
+			 * <-----  注解模式下   ----->
 			 * 当postProcessor为ConfigurationClassPostProcessor时, 执行
 			 * {@link org.springframework.context.annotation.ConfigurationClassPostProcessor#postProcessBeanDefinitionRegistry}
-			 * 上面的方法中完成了注解类的扫描和注册
+			 * 上面的方法中完成了注解类中的扫描和注册
 			 */
 			postProcessor.postProcessBeanDefinitionRegistry(registry);
 		}
@@ -398,6 +402,13 @@ final class PostProcessorRegistrationDelegate {
 	 */
 	private static void invokeBeanFactoryPostProcessors(
 			Collection<? extends BeanFactoryPostProcessor> postProcessors, ConfigurableListableBeanFactory beanFactory) {
+
+		/**
+		 * <-----  注解模式下   ----->
+		 * 当postProcessor为ConfigurationClassPostProcessor时, 执行
+		 * {@link ConfigurationClassPostProcessor#postProcessBeanFactory}
+		 * 完成对配置类的代理
+		 */
 
 		for (BeanFactoryPostProcessor postProcessor : postProcessors) {
 			postProcessor.postProcessBeanFactory(beanFactory);

@@ -546,22 +546,28 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			prepareBeanFactory(beanFactory);
 
 			try {
-				/**
-				 * 允许在子类中对bean工厂进行后处理。
-				 */
+				//允许在子类中对bean工厂进行后处理。
 				postProcessBeanFactory(beanFactory);
 
 				/**
+				 * <-----  注解模式  ----->
 				 * 1. 如果是使用AnnotationConfigApplicationContext来初始化环境(该方法是解析注册bean的重要入口) <--------------------重要
 				 * 在该方法中执行了
 				 * 	{@link org.springframework.context.annotation.ConfigurationClassPostProcessor#processConfigBeanDefinitions} 方法
-				 * 	对注解bean进行解析
+				 * 	对配置类进行解析(如果该注解bean是配置类则在这个方法里完成了包扫描操作)          <--------------- 重要
+
+				 * -->注意 :
 				 * 	一般情况下, 此时beanFactory中只注册了这一个BeanFactoryPostProcessor类-->ConfigurationClassPostProcessor
 				 * 	在{@link AnnotationConfigUtils#registerAnnotationConfigProcessors(org.springframework.beans.factory.support.BeanDefinitionRegistry)}中注册的
+				 * -->注意 :
+				 *  注解模式下,此时BeanDefinitionMap中含有6个Spring内部处理器类, 其中通过ConfigurationClassPostProcessor类来解析配置类,完成包扫描,bean注册等操作
+				 * 	然而, 在xml配置模式下, 此时BeanDefinitionMap只有自定义配置的BeanDefinition信息
 				 *
+				 * <----- XML配置模式  ----->
 				 * 2. 如果是使用ClassPathXmlApplicationContext来初始化环境
-				 * 在这里对一些使用的注解进行解析, 并注册;
-				 * 激活各种BeanFactory的处理器执行其中的postProcessBeanDefinitionRegistry()方法和postProcessBeanDefinition()方法
+				 *  默认情况下, 此时BeanDefinitionMap只有自定义配置的BeanDefinition信息, 并没有任何Spring内部所定义的BeanFactory后处理器
+				 *  除非用户自定义了BeanFactory后处理器, 需要对BeanFactory进行修改, 那么才会执行对应后处理器里面的方法;
+				 *
 				 */
 				invokeBeanFactoryPostProcessors(beanFactory);
 
@@ -664,12 +670,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
 		/**
 		 * 此处根据实现类的不同调用不同的refreshBeanFactory()方法
-		 *
+		 *<----- 注解配置模式  ----->
 		 * 1. 如果是使用AnnotationConfigApplicationContext来初始化环境
 		 * 调用的是GenericApplicationContext#refreshBeanFactory()方法
 		 * {@link GenericApplicationContext#refreshBeanFactory()}
 		 * 在该方法中只是对beanFactory的一些变量进行设置
 		 *
+		 *<----- XML配置模式  ----->
 		 * 2. 如果是使用ClassPathXmlApplicationContext来初始化环境
 		 * 调用的是{@link AbstractRefreshableApplicationContext#refreshBeanFactory()}
 		 * 由于还没有对beanFactory进行初始化,所以在该方法中,完成了对beanFactory的初始化操作

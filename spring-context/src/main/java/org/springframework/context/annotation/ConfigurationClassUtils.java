@@ -117,16 +117,19 @@ abstract class ConfigurationClassUtils {
 		/**
 		 * 2. 注解类型判断, 添加CONFIGURATION_CLASS_ATTRIBUTE属性
 		 */
-		//判断是否含有@Configuration注解
+		//判断是否含有@Configuration注解, 如果是则该类为全注解类, 就把CONFIGURATION_CLASS_ATTRIBUTE属性值设为full
 		if (isFullConfigurationCandidate(metadata)) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_FULL);
 		}
 		//如果没有@Configuration注解,才会去判断是否含有@Component, @ComponentScan, @Import, @ImportResource注解
+		//如果还有上面的注解, 则是lite注解类,就把CONFIGURATION_CLASS_ATTRIBUTE属性值设为lite
 		else if (isLiteConfigurationCandidate(metadata)) {
 			beanDef.setAttribute(CONFIGURATION_CLASS_ATTRIBUTE, CONFIGURATION_CLASS_LITE);
 		}
-		//什么注解都没有就返回false
 		else {
+			/**
+			 * 3. 什么注解都没有就直接返回false
+			 */
 			return false;
 		}
 
