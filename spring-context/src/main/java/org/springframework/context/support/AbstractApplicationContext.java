@@ -556,10 +556,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 	{@link org.springframework.context.annotation.ConfigurationClassPostProcessor#processConfigBeanDefinitions} 方法
 				 * 	对配置类进行解析(如果该注解bean是配置类则在这个方法里完成了包扫描操作)          <--------------- 重要
 
-				 * -->注意 :
+				 * --> 注意:
 				 * 	一般情况下, 此时beanFactory中只注册了这一个BeanFactoryPostProcessor类-->ConfigurationClassPostProcessor
 				 * 	在{@link AnnotationConfigUtils#registerAnnotationConfigProcessors(org.springframework.beans.factory.support.BeanDefinitionRegistry)}中注册的
-				 * -->注意 :
+				 * --> 注意:
 				 *  注解模式下,此时BeanDefinitionMap中含有6个Spring内部处理器类, 其中通过ConfigurationClassPostProcessor类来解析配置类,完成包扫描,bean注册等操作
 				 * 	然而, 在xml配置模式下, 此时BeanDefinitionMap只有自定义配置的BeanDefinition信息
 				 *
@@ -586,7 +586,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				//在所有注册的bean中查找listener bean,注册到消息广播器中
 				registerListeners();
 
-				// 初始化剩下的单例(非惰性的)
+				// 初始化剩下的单例(非延迟加载的,延迟加载的单例在第一次调用的时候初始化)
 				finishBeanFactoryInitialization(beanFactory);
 
 				//最后一步:完成刷新过程,通知生命周期处理器lifecycleProcessor刷新过程,同时发出ContextRefreshEvent通知别人
@@ -599,7 +599,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 							"cancelling refresh attempt: " + ex);
 				}
 
-				// Destroy already created singletons to avoid dangling resources.
+				// 销毁已创建的单例以避免资源悬空。
 				destroyBeans();
 
 				// Reset 'active' flag.
@@ -805,9 +805,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void initMessageSource() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		//查找是否包含了名为messageSource的bean，如果没有，创建一个默认的
 		if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
 			this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
 			// Make MessageSource aware of parent MessageSource.
+			//判断是否有父类且是一个分层级的messageSource，如果是将父容器的的messageSource设置到里边
 			if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource) {
 				HierarchicalMessageSource hms = (HierarchicalMessageSource) this.messageSource;
 				if (hms.getParentMessageSource() == null) {
@@ -954,7 +956,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Allow for caching all bean definition metadata, not expecting further changes.
 		beanFactory.freezeConfiguration();
 
-		// Instantiate all remaining (non-lazy-init) singletons.
+		//实例化所有的单例对象
 		beanFactory.preInstantiateSingletons();
 	}
 
