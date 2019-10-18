@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 
-/*@Service("userService2")*/
-public class UserServiceImpl2 implements  UserService{
+@Service("userService2")
+public class UserServiceImpl2 implements  UserService2{
 	@Autowired
 	private UserDao userDao;
 

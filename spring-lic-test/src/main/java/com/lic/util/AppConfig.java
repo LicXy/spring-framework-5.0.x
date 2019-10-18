@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AppConfig {
 
-	@Bean
+/*	@Bean
 	public UserService userService2(){
 		return new UserServiceImpl2();
 	}
@@ -22,6 +22,6 @@ public class AppConfig {
 	public UserService userService(){
 		userService2();
 		return new UserServiceImpl();
-	}
+	}*/
 
 }
