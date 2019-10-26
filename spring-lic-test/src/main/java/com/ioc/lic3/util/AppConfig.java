@@ -5,7 +5,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 @Configurable
-@ComponentScan("com.lic3")
+@ComponentScan("com.ioc.lic3")
 @Import(MyImportSelector.class)
 public class AppConfig {
 }

@@ -1,5 +1,6 @@
 package com.ioc.lic.util;
 
+import com.ioc.lic.service.UserService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 
