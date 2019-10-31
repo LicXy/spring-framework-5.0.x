@@ -956,7 +956,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		// Allow for caching all bean definition metadata, not expecting further changes.
 		beanFactory.freezeConfiguration();
 
-		//实例化所有的单例对象
+		/**
+		 * 实例化所有的单例对象
+		 * {@link org.springframework.beans.factory.support.DefaultListableBeanFactory#preInstantiateSingletons()}
+		 */
 		beanFactory.preInstantiateSingletons();
 	}
 
