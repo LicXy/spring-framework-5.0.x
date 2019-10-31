@@ -543,6 +543,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (instanceWrapper == null) {
 			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
+		//获取已实例化完成的bean(依赖处理和属性注入还未进行)
 		final Object bean = instanceWrapper.getWrappedInstance();
 		Class<?> beanType = instanceWrapper.getWrappedClass();
 		if (beanType != NullBean.class) {
@@ -595,7 +596,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		/**
-		 * 	5.属性填充
+		 * 	5.属性填充, 后处理器应用, 初始化方法执行
 		 */
 		Object exposedObject = bean;
 		try {
@@ -603,7 +604,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 * 对bean进行填充.将各个属性值注入,其中,可能存在依赖于其他bean的属性,则会递归初始化bean
 			 */
 			populateBean(beanName, mbd, instanceWrapper);
-			//调用初始化方法,比如init-method
+			//调用初始化方法,比如init-method(在调用初始化方法之前执行后处理器)
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
@@ -928,8 +929,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	}
 
 	/**
-	 * Obtain a reference for early access to the specified bean,
-	 * typically for the purpose of resolving a circular reference.
+	 * 获取有关早期访问指定bean的参考，
+	 * 通常用于解决循环引用的目的。
 	 * @param beanName the name of the bean (for error handling purposes)
 	 * @param mbd the merged bean definition for the bean
 	 * @param bean the raw bean instance

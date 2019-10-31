@@ -169,7 +169,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/** Names of beans that have already been created at least once */
 	private final Set<String> alreadyCreated = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
 
-	/** Names of beans that are currently in creation */
+	/** 当前正在创建的bean的名称 */
 	private final ThreadLocal<Object> prototypesCurrentlyInCreation =
 			new NamedThreadLocal<>("Prototype beans currently in creation");
 
@@ -287,18 +287,21 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			 * 就会产生当A还未创建完成的时候因为对于B的创建再次返回创建A,造成循环依赖,
 			 * 对于此种情况Spring选择抛出异常,而不是解决循环依赖;
 			 *
-			 * 也就是isPrototypeCurrentlyInCreation(beanName)为true
+			 * 因为isPrototypeCurrentlyInCreation(beanName)为true, 说明此时正在创建的原型类型的bean已经存在于正在创建的集合中,
+			 * 此时是对同一个bean的第二次创建, 然而第一次创建还未完成, 说明出现了循环依赖, 抛出异常;
+			 * 如果该bean是原型, 但是这是第一次创建, 可以正常向下执行
 			 *
 			 */
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
+
 			/**
 			 * 5.检查该beanName信息是否存在于工厂中
 			 * !containsBeanDefinition(beanName):如果beanDefinitionMap中也就是当前加载的XML配置文件所生成的在类中不包括beanName,则尝试从parentBeanFactory中检测
 			 *
 			 * 注意:
-			 * 如果原型模式的bean中出现循环依赖,那么就会抛出异常,并且程序将不再向下执行
+			 * 如果原型模式的bean中出现循环依赖,那么就会抛出异常,并且程序将不再向下执行,如果原型模式的bean是第一次创建, 那么可以继续执行
 			 * 如果是单例模式中有循环依赖,那么在后面创建单例模式的的bean时会针对循环依赖进行解决
 			 */
 			BeanFactory parentBeanFactory = getParentBeanFactory();
@@ -1099,7 +1102,15 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param beanName the name of the bean
 	 */
 	protected boolean isPrototypeCurrentlyInCreation(String beanName) {
+		/**
+		 * prototypesCurrentlyInCreation: 存储当前正在创建的bean的名称
+		 */
 		Object curVal = this.prototypesCurrentlyInCreation.get();
+		/**
+		 * 如果正在创建的beanName是原型, 并且已经存在于prototypesCurrentlyInCreation(正在创建的原型类型bean集合)集合中
+		 * 如果是原型,并且已经存在于该集合中, 那么可以判断出此时该bean已经出现循环依赖, 那么对于原型类型, 不解决循环依赖,
+		 * 而是抛出异常
+		 */
 		return (curVal != null &&
 				(curVal.equals(beanName) || (curVal instanceof Set && ((Set<?>) curVal).contains(beanName))));
 	}
