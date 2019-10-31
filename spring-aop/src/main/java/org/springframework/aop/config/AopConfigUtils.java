@@ -96,7 +96,13 @@ public abstract class AopConfigUtils {
 	@Nullable
 	public static BeanDefinition registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
-
+		/**
+		 * 将AnnotationAwareAspectJAutoProxyCreator代理创建器的类路径传递过去
+		 *
+		 * AnnotationAwareAspectJAutoProxyCreator类实现了BeanPostProcessor接口,
+		 * 那么在spring加载每个bean时会在调用初始化方法前后调用postProcessBeforeInitialization
+		 * 和postProcessorAfterInitialization方法来执行代理包装逻辑的
+		 */
 		return registerOrEscalateApcAsRequired(AnnotationAwareAspectJAutoProxyCreator.class, registry, source);
 	}
 
@@ -119,23 +125,29 @@ public abstract class AopConfigUtils {
 			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
-
+        //判断自动代理创建器是否已存在
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
+			//获取已存在的自动代理创建器
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
+			//如果存在的自动代理创建器与即将创建的不一致,那么需要根据优先级来判断到底需要使用哪种
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
+				//获取优先级
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);
 				if (currentPriority < requiredPriority) {
+					//改变bean最重要的就是改变bean对应的className属性
 					apcDefinition.setBeanClassName(cls.getName());
 				}
 			}
+			//如果已存在自动代理创建器与将要创建的一致,那么无需再次创建
 			return null;
 		}
-
+		//如果自动代理创建器不存在,则创建
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);
 		beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		//注册
 		registry.registerBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME, beanDefinition);
 		return beanDefinition;
 	}
