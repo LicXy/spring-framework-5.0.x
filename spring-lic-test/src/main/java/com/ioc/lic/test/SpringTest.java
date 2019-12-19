@@ -2,7 +2,11 @@ package com.ioc.lic.test;
 
 import com.ioc.lic.service.UserService;
 import com.ioc.lic.util.AppConfig;
+import org.springframework.beans.factory.xml.XmlBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.io.ClassPathResource;
 
 public class SpringTest {
 
@@ -19,24 +23,24 @@ public class SpringTest {
 		/**
 		 * 1. 应用上下文初始化方式(二: 配置文件方式)
 		 */
-		/*AnnotationConfigApplicationContext annotationConfigApplicationContext11 =
+		AnnotationConfigApplicationContext annotationConfigApplicationContext11 =
 				new AnnotationConfigApplicationContext("springConf.xml");
 		UserService userService11 = (UserService) annotationConfigApplicationContext11.getBean("");
-		userService11.query();*/
+		userService11.query();
 
 		/**
 		 * 2. 应用上下文初始化方式(三)
 		 */
-		/*ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("springConf.xml");
+		ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("springConf.xml");
 		UserService userService1 = (UserService) applicationContext1.getBean("xxx");
-		userService1.query();*/
+		userService1.query();
 
 		/**
 		 * 3(已过时). 应用上下文初始化方式(四)
 		 */
-		/*XmlBeanFactory bf = new XmlBeanFactory(new ClassPathResource("bean.xml"));
+		XmlBeanFactory bf = new XmlBeanFactory(new ClassPathResource("bean.xml"));
 		UserService userService2 = (UserService) bf.getBean("xxx");
-		userService2.query();*/
+		userService2.query();
 
 	}
 }
