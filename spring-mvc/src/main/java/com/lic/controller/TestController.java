@@ -14,6 +14,7 @@ public class TestController {
 	public ModelAndView sayHello(int age, String name) {
 		ModelAndView mav = new ModelAndView();
 		MyBean bean = new MyBean(age, name);
+		System.out.println("**************** 控制层已执行 ****************");
 		mav.addObject("myBean", bean);
 		mav.setViewName("sayHello");
 		System.out.println(bean.toString());

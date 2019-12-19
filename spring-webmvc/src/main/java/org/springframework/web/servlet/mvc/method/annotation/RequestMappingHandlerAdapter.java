@@ -796,7 +796,10 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			}
 		}
 		else {
-			// No synchronization on session demanded at all...
+			//完全不需要会话同步。
+			/**
+			 * {@link RequestMappingHandlerAdapter#invokeHandlerMethod(HttpServletRequest, HttpServletResponse, HandlerMethod)}
+			 */
 			mav = invokeHandlerMethod(request, response, handlerMethod);
 		}
 

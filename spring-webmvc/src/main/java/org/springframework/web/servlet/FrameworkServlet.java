@@ -855,6 +855,13 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			processRequest(request, response);
 		}
 		else {
+			/**
+			 * HttpServlet#service根据请求类型调用不同的方法
+			 * Method ==> Get
+			 * {@link FrameworkServlet#doGet(HttpServletRequest, HttpServletResponse)}
+			 * Method ==> Post
+			 * {@link FrameworkServlet#doPut(HttpServletRequest, HttpServletResponse)}
+			 */
 			super.service(request, response);
 		}
 	}
@@ -978,6 +985,10 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			/**
+			 * 请求逻辑处理
+			 * {@link DispatcherServlet#doService(HttpServletRequest,HttpServletResponse)}
+			 */
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {
