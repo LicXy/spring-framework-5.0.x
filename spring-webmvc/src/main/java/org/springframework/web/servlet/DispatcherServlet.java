@@ -957,15 +957,16 @@ public class DispatcherServlet extends FrameworkServlet {
 		WebAsyncManager asyncManager = WebAsyncUtils.getAsyncManager(request);
 
 		try {
-			ModelAndView mv = null;
-			Exception dispatchException = null;
+			ModelAndView mv = null;  //封装view和数据信息
+			Exception dispatchException = null;  //封装异常信息
 
 			try {
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
 				/**
-				 * 获取符合当前请求的处理程序
+				 * 1. 获取处理器
+				 * mappedHandler: HandlerExecutionChain
 				 */
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
@@ -973,7 +974,9 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
-				//确定当前请求的处理程序适配器
+				/**
+				 * 2. 获取适配器
+				 */
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// 如果处理程序支持，则处理最后修改的标头
@@ -988,13 +991,15 @@ public class DispatcherServlet extends FrameworkServlet {
 						return;
 					}
 				}
-
+				/**
+				 * 3. 执行HandlerExecutionChain中拦截器
+				 */
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
 
 				/**
-				 * 执行处理器, 也就是我们编写的Controller类
+				 * 4. 通过适配器执行处理器, 也就是我们编写的Controller类; 注意: 这里调用的是适配器的handle()方法
 				 * {@link AbstractHandlerMethodAdapter#handle(HttpServletRequest, HttpServletResponse, Object)}
 				 *
 				 * mv: ModelAndView实例{@link AbstractHandlerMethodAdapter#handle(HttpServletRequest,HttpServletResponse, Object)}
@@ -1016,6 +1021,9 @@ public class DispatcherServlet extends FrameworkServlet {
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
+			/**
+			 * 5. 视图解析
+			 */
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
@@ -1197,6 +1205,7 @@ public class DispatcherServlet extends FrameworkServlet {
 					logger.trace("Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
 				}
 				/**
+				 * 遍历所有的HandlerMapping, 根据Request获取到合适的HandlerMapping, 并包装为HandlerExecutionChain执行链
 				 * {@link AbstractHandlerMapping#getHandler(HttpServletRequest)}
 				 */
 				HandlerExecutionChain handler = hm.getHandler(request);

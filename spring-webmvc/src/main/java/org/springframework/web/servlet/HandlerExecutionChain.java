@@ -43,7 +43,7 @@ public class HandlerExecutionChain {
 	private final Object handler;
 
 	@Nullable
-	private HandlerInterceptor[] interceptors;
+	private HandlerInterceptor[] interceptors;  //拦截器链
 
 	@Nullable
 	private List<HandlerInterceptor> interceptorList;
