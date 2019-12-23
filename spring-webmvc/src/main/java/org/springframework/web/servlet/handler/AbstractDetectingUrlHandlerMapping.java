@@ -55,6 +55,11 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 	 */
 	@Override
 	public void initApplicationContext() throws ApplicationContextException {
+		/**
+		 * 	其顶级父类AbstractHandlerMapping继承了WebApplicationObjectSupport,容器初始化时会自动调用模板方法
+		 * 	initApplicationContext, 这里子类重写该方法并加了一些逻辑, 主要是为了将匹配该映射器的Handler对象加入
+		 * 	到handlerMap集合中
+		 */
 		super.initApplicationContext();
 		detectHandlers();
 	}
@@ -72,15 +77,24 @@ public abstract class AbstractDetectingUrlHandlerMapping extends AbstractUrlHand
 		if (logger.isDebugEnabled()) {
 			logger.debug("Looking for URL mappings in application context: " + applicationContext);
 		}
+		/**
+		 * 将SpringMVC容器中注册的Bean的name都找出来放进数组中
+		 */
 		String[] beanNames = (this.detectHandlersInAncestorContexts ?
 				BeanFactoryUtils.beanNamesForTypeIncludingAncestors(applicationContext, Object.class) :
 				applicationContext.getBeanNamesForType(Object.class));
 
 		// Take any bean name that we can determine URLs for.
 		for (String beanName : beanNames) {
+			/**
+			 * 匹配到符合该映射器的bean的name
+			 */
 			String[] urls = determineUrlsForHandler(beanName);
 			if (!ObjectUtils.isEmpty(urls)) {
-				// URL paths found: Let's consider it a handler.
+				/**
+				 * 调用父类(AbstractUrlHandlerMapping)的registerHandler方法将匹配的beanName和urls分别作为key和value
+				 * 装进handlerMap集合中
+				 */
 				registerHandler(urls, beanName);
 			}
 			else {

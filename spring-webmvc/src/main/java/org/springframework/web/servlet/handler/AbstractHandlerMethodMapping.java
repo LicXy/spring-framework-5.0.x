@@ -209,6 +209,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
 				Class<?> beanType = null;
 				try {
+					//获取对应bean的Class
 					beanType = obtainApplicationContext().getType(beanName);
 				}
 				catch (Throwable ex) {
@@ -217,6 +218,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 						logger.debug("Could not resolve target class for bean with name '" + beanName + "'", ex);
 					}
 				}
+				/**
+				 * isHandler()方法用来判断是否符合注册条件, 具体的判断逻辑由子类实现
+				 */
 				if (beanType != null && isHandler(beanType)) {
 					//对Controller类中所有的方法进行探测
 					detectHandlerMethods(beanName);

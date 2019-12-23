@@ -22,4 +22,12 @@
 		<property name="suffix" value=".jsp"></property>
 	</bean>
 
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<props>
+				<prop key="/hi">hi</prop>
+			</props>
+		</property>
+	</bean>
+	<bean id = "hi" class="com.xy.controller.LicController"/>
 </beans>
