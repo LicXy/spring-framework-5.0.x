@@ -358,7 +358,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		 */
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 		if (directPathMatches != null) {
-			//将HandlerMethod实例与Request进行包装, 添加到matches集合中
+			/**
+			 * 将HandlerMethod实例与Request进行包装, 添加到matches集合中
+			 */
 			addMatchingMappings(directPathMatches, matches, request);
 		}
 		if (matches.isEmpty()) {
