@@ -99,6 +99,11 @@ public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 	 */
 	@Override
 	public void initApplicationContext() throws BeansException {
+		/**
+		 * 其顶级父类AbstractHandlerMapping继承了WebApplicationObjectSupport,容器初始化时会自动调用模板方法
+		 * initApplicationContext, 这里子类重写该方法并加了一些逻辑, 主要是为了将匹配该映射器的Handler对象加入
+		 * 到handlerMap集合中
+		 */
 		super.initApplicationContext();
 		registerHandlers(this.urlMap);
 	}
