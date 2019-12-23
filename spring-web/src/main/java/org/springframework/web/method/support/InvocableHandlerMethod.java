@@ -133,6 +133,9 @@ public class InvocableHandlerMethod extends HandlerMethod {
 			logger.trace("Invoking '" + ClassUtils.getQualifiedMethodName(getMethod(), getBeanType()) +
 					"' with arguments " + Arrays.toString(args));
 		}
+		/**
+		 * 执行Handler方法
+		 */
 		Object returnValue = doInvoke(args);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Method [" + ClassUtils.getQualifiedMethodName(getMethod(), getBeanType()) +
@@ -201,13 +204,14 @@ public class InvocableHandlerMethod extends HandlerMethod {
 
 
 	/**
-	 * Invoke the handler method with the given argument values.
+	 * 使用给定的参数值调用处理程序方法。
 	 */
 	protected Object doInvoke(Object... args) throws Exception {
 		ReflectionUtils.makeAccessible(getBridgedMethod());
 		try {
 			/**
-			 *
+			 *  获取桥接方法实例, 并执行该方法
+			 *  执行Control类中编写的方法
 			 */
 			return getBridgedMethod().invoke(getBean(), args);
 		}

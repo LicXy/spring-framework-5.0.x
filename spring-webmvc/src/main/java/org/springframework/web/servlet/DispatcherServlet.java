@@ -59,6 +59,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 import org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter;
+import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.util.NestedServletException;
 import org.springframework.web.util.WebUtils;
 
@@ -1083,8 +1084,11 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 
-		// Did the handler return a view to render?
+		// 处理程序是否返回了要渲染的视图？
 		if (mv != null && !mv.wasCleared()) {
+			/**
+			 * 渲染视图
+			 */
 			render(mv, request, response);
 			if (errorView) {
 				WebUtils.clearErrorRequestAttributes(request);
@@ -1248,6 +1252,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Testing handler adapter [" + ha + "]");
 				}
+				//如果该适配器支持当前handler, 则直接返回该适配器
 				if (ha.supports(handler)) {
 					return ha;
 				}
@@ -1321,7 +1326,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		View view;
 		String viewName = mv.getViewName();
 		if (viewName != null) {
-			// We need to resolve the view name.
+			//根据ViewName获取view实例
 			view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
 			if (view == null) {
 				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
@@ -1329,7 +1334,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}
 		else {
-			// No need to lookup: the ModelAndView object contains the actual View object.
+			//无需查找：ModelAndView对象包含实际的View对象。
 			view = mv.getView();
 			if (view == null) {
 				throw new ServletException("ModelAndView [" + mv + "] neither contains a view name nor a " +
@@ -1345,6 +1350,10 @@ public class DispatcherServlet extends FrameworkServlet {
 			if (mv.getStatus() != null) {
 				response.setStatus(mv.getStatus().value());
 			}
+			/**
+			 * 视图解析
+			 * {@link AbstractView#render(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+			 */
 			view.render(mv.getModelInternal(), request, response);
 		}
 		catch (Exception ex) {

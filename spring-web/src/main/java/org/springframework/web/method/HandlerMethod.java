@@ -213,7 +213,7 @@ public class HandlerMethod {
 	}
 
 	/**
-	 * If the bean method is a bridge method, this method returns the bridged
+	 * 如果bean方法是桥接方法，则此方法返回已桥接
 	 * (user-defined) method. Otherwise it returns the same method as {@link #getMethod()}.
 	 */
 	protected Method getBridgedMethod() {

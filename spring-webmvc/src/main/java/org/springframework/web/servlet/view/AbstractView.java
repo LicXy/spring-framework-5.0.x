@@ -312,6 +312,10 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 
 		Map<String, Object> mergedModel = createMergedOutputModel(model, request, response);
 		prepareResponse(request, response);
+		/**
+		 * 开始view视图渲染以及数据输出整理
+		 * {@link InternalResourceView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
+		 */
 		renderMergedOutputModel(mergedModel, getRequestToExpose(request), response);
 	}
 
@@ -440,6 +444,9 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 
 		model.forEach((modelName, modelValue) -> {
 			if (modelValue != null) {
+				/**
+				 * 循环遍历所有数据, 写入Request域中
+				 */
 				request.setAttribute(modelName, modelValue);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Added model object '" + modelName + "' of type [" + modelValue.getClass().getName() +
