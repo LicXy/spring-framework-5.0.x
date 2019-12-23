@@ -1783,7 +1783,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		try {
 			/**
-			 * 激活用户自定义的init方法
+			 * 激活用户自定义的init方法, 完成初始化
 			 */
 			invokeInitMethods(beanName, wrappedBean, mbd);
 		}

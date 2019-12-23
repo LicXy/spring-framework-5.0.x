@@ -348,6 +348,8 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 	@Nullable
 	public final HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		/**
+		 * this ==> RequestMappingUrlHandlerMapping
+		 * 根据请求信息获取指定的Handler
 		 * {@link AbstractHandlerMethodMapping#getHandlerInternal(HttpServletRequest)}
 		 */
 		Object handler = getHandlerInternal(request);
@@ -364,7 +366,7 @@ public abstract class AbstractHandlerMapping extends WebApplicationObjectSupport
 			handler = obtainApplicationContext().getBean(handlerName);
 		}
 		/**
-		 * 将handler和request包装为HandlerExecutionChain
+		 * 将handler和request包装为HandlerExecutionChain,在HandlerExecutionChain设置了相关过滤器
 		 */
 		HandlerExecutionChain executionChain = getHandlerExecutionChain(handler, request);
 		if (CorsUtils.isCorsRequest(request)) {

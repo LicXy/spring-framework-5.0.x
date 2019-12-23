@@ -187,6 +187,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	@Override
 	public void afterPropertiesSet() {
+		//初始化Handler方法, 就是对编写的Control层方法进行注册, key为方法的访问路径, value为对方法的包装类HandlerMethod
 		initHandlerMethods();
 	}
 
@@ -217,6 +218,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					}
 				}
 				if (beanType != null && isHandler(beanType)) {
+					//对Controller类中所有的方法进行探测
 					detectHandlerMethods(beanName);
 				}
 			}
@@ -249,6 +251,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				logger.debug(methods.size() + " request handler methods found on " + userType + ": " + methods);
 			}
 			methods.forEach((method, mapping) -> {
+				/**
+				 * 循环遍历所有的方法,进行注册
+				 */
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
 				registerHandlerMethod(handler, invocableMethod, mapping);
 			});
@@ -317,6 +322,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		}
 		this.mappingRegistry.acquireReadLock();  //获取读锁
 		try {
+			/**
+			 * 获取HandlerMethod实例
+			 */
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			if (logger.isDebugEnabled()) {
 				if (handlerMethod != null) {
@@ -345,8 +353,12 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	@Nullable
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
 		List<Match> matches = new ArrayList<>();
+		/**
+		 * 根据访问url获取指定的HandlerMethod实例
+		 */
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 		if (directPathMatches != null) {
+			//将HandlerMethod实例与Request进行包装, 添加到matches集合中
 			addMatchingMappings(directPathMatches, matches, request);
 		}
 		if (matches.isEmpty()) {
@@ -558,6 +570,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 				List<String> directUrls = getDirectUrls(mapping);
 				for (String url : directUrls) {
+					/**
+					 * 对control类中方法进行注册, mapping为HandlerMethod实例
+					 */
 					this.urlLookup.add(url, mapping);
 				}
 

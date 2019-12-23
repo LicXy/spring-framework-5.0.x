@@ -168,7 +168,10 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 			}
 		}
 
-		// Let subclasses do whatever initialization they like.
+		/**
+		 * 由子类实现, 进行子类的初始化
+		 * {@link FrameworkServlet#initServletBean()}
+		 */
 		initServletBean();
 
 		if (logger.isDebugEnabled()) {

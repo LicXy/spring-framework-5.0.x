@@ -992,7 +992,7 @@ public class DispatcherServlet extends FrameworkServlet {
 					}
 				}
 				/**
-				 * 3. 执行HandlerExecutionChain中拦截器
+				 * 3. 执行HandlerExecutionChain中的拦截器
 				 */
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
