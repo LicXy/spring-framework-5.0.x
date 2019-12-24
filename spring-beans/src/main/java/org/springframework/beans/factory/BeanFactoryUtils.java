@@ -329,6 +329,9 @@ public abstract class BeanFactoryUtils {
 		if (lbf instanceof HierarchicalBeanFactory) {
 			HierarchicalBeanFactory hbf = (HierarchicalBeanFactory) lbf;
 			if (hbf.getParentBeanFactory() instanceof ListableBeanFactory) {
+				/**
+				 * 进入递归, 从当前BeanFactory向上查询, 将探测到的Bean进行判断, 符合条件的加入result集合中
+				 */
 				Map<String, T> parentResult = beansOfTypeIncludingAncestors(
 						(ListableBeanFactory) hbf.getParentBeanFactory(), type, includeNonSingletons, allowEagerInit);
 				parentResult.forEach((beanName, beanType) -> {

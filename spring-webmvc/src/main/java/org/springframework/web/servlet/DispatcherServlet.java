@@ -620,9 +620,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initHandlerAdapters(ApplicationContext context) {
 		this.handlerAdapters = null;
-
+        //如果detectAllHandlerAdapters为true, 则开启探测所有处理适配器
 		if (this.detectAllHandlerAdapters) {
-			// Find all HandlerAdapters in the ApplicationContext, including ancestor contexts.
+			/**
+			 * 在应用上下文中找到所有的处理适配器, 包括顶级上下文
+			 */
 			Map<String, HandlerAdapter> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerAdapter.class, true, false);
 			if (!matchingBeans.isEmpty()) {
@@ -637,12 +639,11 @@ public class DispatcherServlet extends FrameworkServlet {
 				this.handlerAdapters = Collections.singletonList(ha);
 			}
 			catch (NoSuchBeanDefinitionException ex) {
-				// Ignore, we'll add a default HandlerAdapter later.
+				// 如果出现异常导致获取的适配器为空,则忽略, 后面将会设置默认的适配器
 			}
 		}
 
-		// Ensure we have at least some HandlerAdapters, by registering
-		// default HandlerAdapters if no other adapters are found.
+		//如果没有获取到适配器, 则这里会注册默认的适配器
 		if (this.handlerAdapters == null) {
 			this.handlerAdapters = getDefaultStrategies(context, HandlerAdapter.class);
 			if (logger.isDebugEnabled()) {
