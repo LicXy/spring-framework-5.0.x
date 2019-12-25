@@ -416,8 +416,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			T match = getMatchingMapping(mapping, request);
 			if (match != null) {
 				/**
-				 * 根据请求路径从mappingLookup集合中获取处理方法, 将Method封装到Match实例中
+				 * 根据MappingInfo信息从mappingLookup集合中获取处理方法, 将Method封装到Match实例中
 				 * 后面处理请求时会利用反射执行该方法
+				 *
+				 *  url ==> mappingInfo ==> HandlerMethod
 				 */
 				matches.add(new Match(match, this.mappingRegistry.getMappings().get(mapping)));
 			}
