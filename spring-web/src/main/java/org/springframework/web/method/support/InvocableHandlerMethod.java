@@ -127,14 +127,16 @@ public class InvocableHandlerMethod extends HandlerMethod {
 	@Nullable
 	public Object invokeForRequest(NativeWebRequest request, @Nullable ModelAndViewContainer mavContainer,
 			Object... providedArgs) throws Exception {
-
+		/**
+		 * 1. 获取执行HandlerMethod方法需要的参数, 也就是请求中包含的需要处理的数据
+		 */
 		Object[] args = getMethodArgumentValues(request, mavContainer, providedArgs);
 		if (logger.isTraceEnabled()) {
 			logger.trace("Invoking '" + ClassUtils.getQualifiedMethodName(getMethod(), getBeanType()) +
 					"' with arguments " + Arrays.toString(args));
 		}
 		/**
-		 * 执行Handler方法
+		 * 2. 执行Handler方法
 		 */
 		Object returnValue = doInvoke(args);
 		if (logger.isTraceEnabled()) {
