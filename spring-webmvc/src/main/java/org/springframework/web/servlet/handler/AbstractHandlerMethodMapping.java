@@ -257,6 +257,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			methods.forEach((method, mapping) -> {
 				/**
 				 * 循环遍历所有的方法,进行注册
+				 * handler为controller类实例, 每一个HandlerMethod中都维护着该实例, 因为在后面执行该方法时需要传入该实例
 				 */
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
 				registerHandlerMethod(handler, invocableMethod, mapping);
@@ -327,7 +328,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		this.mappingRegistry.acquireReadLock();  //获取读锁
 		try {
 			/**
-			 * 获取HandlerMethod实例
+			 * 获取HandlerMethod实例(不健全, 数据没有封装完成)
 			 */
 			HandlerMethod handlerMethod = lookupHandlerMethod(lookupPath, request);
 			if (logger.isDebugEnabled()) {
@@ -338,6 +339,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					logger.debug("Did not find handler method for [" + lookupPath + "]");
 				}
 			}
+			/**
+			 * 重塑HandlerMethod  ==> 重点
+			 */
 			return (handlerMethod != null ? handlerMethod.createWithResolvedBean() : null);
 		}
 		finally {
@@ -358,7 +362,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	protected HandlerMethod lookupHandlerMethod(String lookupPath, HttpServletRequest request) throws Exception {
 		List<Match> matches = new ArrayList<>();
 		/**
-		 * 根据访问url获取指定的HandlerMethod实例
+		 * 由映射处理器映射出对应的MappingInfo信息, 可能获取多个
 		 */
 		List<T> directPathMatches = this.mappingRegistry.getMappingsByUrl(lookupPath);
 		if (directPathMatches != null) {
@@ -374,10 +378,14 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 		if (!matches.isEmpty()) {
 			Comparator<Match> comparator = new MatchComparator(getMappingComparator(request));
+			//对所有符合条件的处理器进行排序
 			matches.sort(comparator);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Found " + matches.size() + " matching mapping(s) for [" + lookupPath + "] : " + matches);
 			}
+			/**
+			 * 获取matches集合中最合适的处理器
+			 */
 			Match bestMatch = matches.get(0);
 			if (matches.size() > 1) {
 				if (CorsUtils.isPreFlightRequest(request)) {
@@ -393,7 +401,6 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			}
 			request.setAttribute(BEST_MATCHING_HANDLER_ATTRIBUTE, bestMatch.handlerMethod);
 			/**
-			 * 由映射处理器(RequestMappingInfoHandlerMapping) 映射出对应的handler
 			 * {@link RequestMappingInfoHandlerMapping#handleMatch(org.springframework.web.servlet.mvc.method.RequestMappingInfo, String, HttpServletRequest)}
 			 */
 			handleMatch(bestMatch.mapping, lookupPath, request);
@@ -408,6 +415,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 		for (T mapping : mappings) {
 			T match = getMatchingMapping(mapping, request);
 			if (match != null) {
+				/**
+				 * 根据请求路径从mappingLookup集合中获取处理方法, 将Method封装到Match实例中
+				 * 后面处理请求时会利用反射执行该方法
+				 */
 				matches.add(new Match(match, this.mappingRegistry.getMappings().get(mapping)));
 			}
 		}
@@ -568,6 +579,9 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			try {
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
 				assertUniqueMethodMapping(handlerMethod, mapping);
+				/**
+				 * mappingLookup: 维护请求信息(RequestMappingInfo)与HandlerMethod的映射关系
+				 */
 				this.mappingLookup.put(mapping, handlerMethod);
 
 				if (logger.isInfoEnabled()) {
@@ -577,7 +591,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				List<String> directUrls = getDirectUrls(mapping);
 				for (String url : directUrls) {
 					/**
-					 * 对control类中方法进行注册, mapping为HandlerMethod实例
+					 * urlLookup: 维护url与请求信息(RequestMappingInfo)的映射关系
+					 *
+					 * 后面会根据Url找RequestMappingInfo, 再根据RequestMappingInfo找HandlerMethod对请求进行处理,
+					 * mapping是什么? 当然就是处理映射器
 					 */
 					this.urlLookup.add(url, mapping);
 				}

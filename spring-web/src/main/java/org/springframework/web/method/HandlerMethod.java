@@ -65,7 +65,7 @@ public class HandlerMethod {
 
 	private final Method method;
 
-	private final Method bridgedMethod;
+	private final Method bridgedMethod;  //处理方法
 
 	private final MethodParameter[] parameters;
 
@@ -141,7 +141,7 @@ public class HandlerMethod {
 		this.beanFactory = handlerMethod.beanFactory;
 		this.beanType = handlerMethod.beanType;
 		this.method = handlerMethod.method;
-		this.bridgedMethod = handlerMethod.bridgedMethod;
+		this.bridgedMethod = handlerMethod.bridgedMethod;  //桥接方法, 也就是需要执行的Control类中的方法
 		this.parameters = handlerMethod.parameters;
 		this.responseStatus = handlerMethod.responseStatus;
 		this.responseStatusReason = handlerMethod.responseStatusReason;
@@ -154,7 +154,7 @@ public class HandlerMethod {
 	private HandlerMethod(HandlerMethod handlerMethod, Object handler) {
 		Assert.notNull(handlerMethod, "HandlerMethod is required");
 		Assert.notNull(handler, "Handler object is required");
-		this.bean = handler;
+		this.bean = handler;  //反射执行Method时需要传入实例对象, 即TestController类实例
 		this.beanFactory = handlerMethod.beanFactory;
 		this.beanType = handlerMethod.beanType;
 		this.method = handlerMethod.method;
@@ -307,11 +307,15 @@ public class HandlerMethod {
 	 */
 	public HandlerMethod createWithResolvedBean() {
 		Object handler = this.bean;
-		if (this.bean instanceof String) {
+		if (this.bean instanceof String) {  //如果bean不是实例而是一个BeanName,则从工厂中获取该bean实例
 			Assert.state(this.beanFactory != null, "Cannot resolve bean name without BeanFactory");
 			String beanName = (String) this.bean;
+			// 从工厂中获取bean
 			handler = this.beanFactory.getBean(beanName);
 		}
+		/**
+		 * 问题: 这里为什么要重新创建一个HandlerMethod实例,而不是在原有的HandlerMethod实例上进行修改?
+		 */
 		return new HandlerMethod(this, handler);
 	}
 
