@@ -595,8 +595,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					/**
 					 * urlLookup: 维护url与请求信息(RequestMappingInfo)的映射关系
 					 *
-					 * 后面会根据Url找RequestMappingInfo, 再根据RequestMappingInfo找HandlerMethod对请求进行处理,
-					 * mapping是什么? 当然就是处理映射器
+					 * 后面会根据Url找RequestMappingInfo, 再根据RequestMappingInfo找HandlerMethod对请求进行处理
 					 */
 					this.urlLookup.add(url, mapping);
 				}
