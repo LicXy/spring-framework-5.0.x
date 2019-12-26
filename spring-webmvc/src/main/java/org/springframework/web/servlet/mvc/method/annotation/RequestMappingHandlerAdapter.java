@@ -867,9 +867,11 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 
 
 			if (this.argumentResolvers != null) {
+				//设置参数解析器
 				invocableMethod.setHandlerMethodArgumentResolvers(this.argumentResolvers);
 			}
 			if (this.returnValueHandlers != null) {
+				//设置返回值解析器
 				invocableMethod.setHandlerMethodReturnValueHandlers(this.returnValueHandlers);
 			}
 			invocableMethod.setDataBinderFactory(binderFactory);
@@ -901,14 +903,14 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 				invocableMethod = invocableMethod.wrapConcurrentResult(result);
 			}
 			/**
-			 * 执行处理器
+			 * 1. 执行处理器
 			 */
 			invocableMethod.invokeAndHandle(webRequest, mavContainer);
 			if (asyncManager.isConcurrentHandlingStarted()) {
 				return null;
 			}
 			/**
-			 * 返回ModelAndView实例, 后面进行视图解析
+			 * 2. 返回ModelAndView实例, 后面进行视图解析
 			 */
 			return getModelAndView(mavContainer, modelFactory, webRequest);
 		}
@@ -1019,6 +1021,9 @@ public class RequestMappingHandlerAdapter extends AbstractHandlerMethodAdapter
 			return null;
 		}
 		ModelMap model = mavContainer.getModel();
+		/**
+		 * 根据从容器中获取的视图名称以及数据模型等信息创建ModelAndView实例
+		 */
 		ModelAndView mav = new ModelAndView(mavContainer.getViewName(), model, mavContainer.getStatus());
 		if (!mavContainer.isViewReference()) {
 			mav.setView((View) mavContainer.getView());
