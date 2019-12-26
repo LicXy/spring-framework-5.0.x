@@ -1022,8 +1022,6 @@ public class DispatcherServlet extends FrameworkServlet {
 				dispatchException = ex;
 			}
 			catch (Throwable err) {
-				// As of 4.3, we're processing Errors thrown from handler methods as well,
-				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
 			/**
@@ -1075,14 +1073,21 @@ public class DispatcherServlet extends FrameworkServlet {
 			@Nullable Exception exception) throws Exception {
 
 		boolean errorView = false;
-
+		/**
+		 * 如果在解析过程中出现异常, 这里会对异常进行处理
+		 */
 		if (exception != null) {
+			//如果是默认异常,则获取异常视图
 			if (exception instanceof ModelAndViewDefiningException) {
 				logger.debug("ModelAndViewDefiningException encountered", exception);
 				mv = ((ModelAndViewDefiningException) exception).getModelAndView();
 			}
+			//如果是自定义异常, 则获取异常处理器, 进行解析
 			else {
 				Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
+				/**
+				 * 异常视图解析
+				 */
 				mv = processHandlerException(request, response, handler, exception);
 				errorView = (mv != null);
 			}
@@ -1283,7 +1288,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	protected ModelAndView processHandlerException(HttpServletRequest request, HttpServletResponse response,
 			@Nullable Object handler, Exception ex) throws Exception {
 
-		// Check registered HandlerExceptionResolvers...
+		//检查注册的HandlerExceptionResolvers ...
 		ModelAndView exMv = null;
 		if (this.handlerExceptionResolvers != null) {
 			for (HandlerExceptionResolver handlerExceptionResolver : this.handlerExceptionResolvers) {
@@ -1333,7 +1338,9 @@ public class DispatcherServlet extends FrameworkServlet {
 		View view;
 		String viewName = mv.getViewName();
 		if (viewName != null) {
-			//根据ViewName获取view实例
+			/**
+			 * 根据ViewName解析view实例
+			 */
 			view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
 			if (view == null) {
 				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
