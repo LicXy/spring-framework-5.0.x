@@ -182,6 +182,10 @@ public class InternalResourceView extends AbstractUrlBasedView {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Forwarding to resource [" + getUrl() + "] in InternalResourceView '" + getBeanName() + "'");
 			}
+			/**
+			 *  如果当前不是include()请求，则直接使用forward请求将当前请求转发到目标文件路径中，
+			 * 	从而渲染该视图
+			 */
 			rd.forward(request, response);
 		}
 	}
