@@ -60,7 +60,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	};
 
 
-	/** The maximum number of entries in the cache */
+	/** 缓存中的最大条目数 */
 	private volatile int cacheLimit = DEFAULT_CACHE_LIMIT;
 
 	/** Whether we should refrain from resolving views again if unresolved once */
@@ -69,7 +69,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	/** Fast access cache for Views, returning already cached instances without a global lock */
 	private final Map<Object, View> viewAccessCache = new ConcurrentHashMap<>(DEFAULT_CACHE_LIMIT);
 
-	/** Map from view key to View instance, synchronized for View creation */
+	/** 从视图键映射到View实例，同步以创建View  */
 	@SuppressWarnings("serial")
 	private final Map<Object, View> viewCreationCache =
 			new LinkedHashMap<Object, View>(DEFAULT_CACHE_LIMIT, 0.75f, true) {
@@ -146,22 +146,40 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
+		//判断缓存是否可用
 		if (!isCache()) {
+			/**
+			 * 如果缓存不可用, 则直接创建视图
+			 */
 			return createView(viewName, locale);
 		}
 		else {
+			/**
+			 * 如果缓存可用, 则先尝试从缓存中获取
+			 */
+			//生成缓存Key
 			Object cacheKey = getCacheKey(viewName, locale);
+			//尝试从缓存中获取视图
 			View view = this.viewAccessCache.get(cacheKey);
 			if (view == null) {
+				/**
+				 * 如果从缓存中获取视图失败, 则尝试从viewCreationCache缓存中获取
+				 */
 				synchronized (this.viewCreationCache) {
 					view = this.viewCreationCache.get(cacheKey);
 					if (view == null) {
-						// Ask the subclass to create the View object.
+						/**
+						 * 让子类创建View对象, 留给子类扩展[扩展开放,修改关闭原则]
+						 *{@link UrlBasedViewResolver#createView(java.lang.String, java.util.Locale)}
+						 */
 						view = createView(viewName, locale);
 						if (view == null && this.cacheUnresolved) {
+							// 这里cacheUnresolved指的是是否缓存默认的空视图，UNRESOLVED_VIEW是
+							// 一个没有任何内容的View
 							view = UNRESOLVED_VIEW;
 						}
 						if (view != null) {
+							//将创建的view视图加入缓存
 							this.viewAccessCache.put(cacheKey, view);
 							this.viewCreationCache.put(cacheKey, view);
 							if (logger.isTraceEnabled()) {
@@ -246,6 +264,9 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 */
 	@Nullable
 	protected View createView(String viewName, Locale locale) throws Exception {
+		/**
+		 * {@link UrlBasedViewResolver#loadView(java.lang.String, java.util.Locale)}
+		 */
 		return loadView(viewName, locale);
 	}
 

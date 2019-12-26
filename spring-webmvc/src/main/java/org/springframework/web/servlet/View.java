@@ -76,6 +76,8 @@ public interface View {
 	 * i.e. before an actual rendering attempt.
 	 * @return the content type String (optionally including a character set),
 	 * or {@code null} if not predetermined
+	 *
+	 * 获取返回值的contentType
 	 */
 	@Nullable
 	default String getContentType() {
@@ -92,6 +94,8 @@ public interface View {
 	 * @param request current HTTP request
 	 * @param response HTTP response we are building
 	 * @throws Exception if rendering failed
+	 *
+	 * 通过用户提供的模型数据与视图信息渲染视图
 	 */
 	void render(@Nullable Map<String, ?> model, HttpServletRequest request, HttpServletResponse response)
 			throws Exception;

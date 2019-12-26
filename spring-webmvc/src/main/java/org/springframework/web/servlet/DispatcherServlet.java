@@ -59,6 +59,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.servlet.handler.AbstractHandlerMapping;
 import org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter;
+import org.springframework.web.servlet.view.AbstractCachingViewResolver;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.util.NestedServletException;
 import org.springframework.web.util.WebUtils;
@@ -1038,7 +1039,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 		finally {
 			if (asyncManager.isConcurrentHandlingStarted()) {
-				// Instead of postHandle and afterCompletion
+				//代替postHandle和afterCompletion
 				if (mappedHandler != null) {
 					mappedHandler.applyAfterConcurrentHandlingStarted(processedRequest, response);
 				}
@@ -1291,6 +1292,9 @@ public class DispatcherServlet extends FrameworkServlet {
 		//检查注册的HandlerExceptionResolvers ...
 		ModelAndView exMv = null;
 		if (this.handlerExceptionResolvers != null) {
+			/**
+			 * 遍历所有的异常解析器, 尝试对异常进行解析, 如果解析成功,跳出循焕
+			 */
 			for (HandlerExceptionResolver handlerExceptionResolver : this.handlerExceptionResolvers) {
 				exMv = handlerExceptionResolver.resolveException(request, response, handler, ex);
 				if (exMv != null) {
@@ -1303,7 +1307,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				request.setAttribute(EXCEPTION_ATTRIBUTE, ex);
 				return null;
 			}
-			// We might still need view name translation for a plain error model...
+			//对于简单的错误模型，我们可能仍需要视图名称转换
 			if (!exMv.hasView()) {
 				String defaultViewName = getDefaultViewName(request);
 				if (defaultViewName != null) {
@@ -1313,6 +1317,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Handler execution resulted in exception - forwarding to resolved error view: " + exMv, ex);
 			}
+			//设置错误请求的相关属性
 			WebUtils.exposeErrorRequestAttributes(request, ex, getServletName());
 			return exMv;
 		}
@@ -1330,9 +1335,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @throws Exception if there's a problem rendering the view
 	 */
 	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
-		// Determine locale for request and apply it to the response.
-		Locale locale =
-				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
+		// 确定请求的语言环境并将其应用于响应
+		Locale locale = (this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
 		response.setLocale(locale);
 
 		View view;
@@ -1365,7 +1369,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				response.setStatus(mv.getStatus().value());
 			}
 			/**
-			 * 视图解析
+			 * 视图渲染
 			 * {@link AbstractView#render(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
 			 */
 			view.render(mv.getModelInternal(), request, response);
@@ -1407,9 +1411,14 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	protected View resolveViewName(String viewName, @Nullable Map<String, Object> model,
 			Locale locale, HttpServletRequest request) throws Exception {
-
 		if (this.viewResolvers != null) {
 			for (ViewResolver viewResolver : this.viewResolvers) {
+				/**
+				 * ViewResolver ==> {@link org.springframework.web.servlet.view.InternalResourceViewResolver}
+				 * 这里的视图解析器就是我们在配置文件中配置的那个
+				 *
+				 * {@link AbstractCachingViewResolver#resolveViewName(String,Locale)}
+				 */
 				View view = viewResolver.resolveViewName(viewName, locale);
 				if (view != null) {
 					return view;

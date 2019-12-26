@@ -309,11 +309,18 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 			logger.trace("Rendering view with name '" + this.beanName + "' with model " + model +
 				" and static attributes " + this.staticAttributes);
 		}
-
+		/**
+		 * 这里主要是将request中pathVariable，staticAttribute与用户返回的model属性
+		 * 合并为一个Map对象，以供给后面对视图的渲染使用
+		 */
 		Map<String, Object> mergedModel = createMergedOutputModel(model, request, response);
+		/**
+		 * 判断当前View对象的类型是否为文件下载类型，如果是文件下载类型，则设置response的
+		 * Pragma和Cache-Control等属性值
+		 */
 		prepareResponse(request, response);
 		/**
-		 * 开始view视图渲染以及数据输出整理
+		 * 开始view视图渲染以及数据输出整理  ==> 重点
 		 * {@link InternalResourceView#renderMergedOutputModel(java.util.Map, javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)}
 		 */
 		renderMergedOutputModel(mergedModel, getRequestToExpose(request), response);

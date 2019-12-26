@@ -464,13 +464,15 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 */
 	@Override
 	protected View createView(String viewName, Locale locale) throws Exception {
-		// If this resolver is not supposed to handle the given view,
-		// return null to pass on to the next resolver in the chain.
+		// 如果此解析器不应该处理给定的视图，则返回null以传递到链中的下一个解析器。
 		if (!canHandle(viewName, locale)) {
 			return null;
 		}
 
-		// Check for special "redirect:" prefix.
+		/**
+		 * 检查特殊的"redirect:"前缀 REDIRECT_URL_PREFIX = "redirect:"
+		 * 如果是以"redirect:" 开头, 说明该视图是重定向
+		 */
 		if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
 			String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
 			RedirectView view = new RedirectView(redirectUrl,
@@ -482,13 +484,18 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 			return applyLifecycleMethods(REDIRECT_URL_PREFIX, view);
 		}
 
-		// Check for special "forward:" prefix.
+		/**
+		 * 检查特殊的"forward:"前缀 FORWARD_URL_PREFIX = "forward:"
+		 * 如果是以"forward:" 开头, 说明该视图是请求转发
+		 */
 		if (viewName.startsWith(FORWARD_URL_PREFIX)) {
 			String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
 			return new InternalResourceView(forwardUrl);
 		}
 
-		// Else fall back to superclass implementation: calling loadView.
+		/**
+		 * 如果是普通视图, 创建该视图视图
+		 */
 		return super.createView(viewName, locale);
 	}
 
@@ -524,8 +531,17 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 */
 	@Override
 	protected View loadView(String viewName, Locale locale) throws Exception {
+		/**
+		 *  使用逻辑视图名按照指定规则生成View对象
+		 * {@link InternalResourceViewResolver#buildView(java.lang.String)}
+		 */
 		AbstractUrlBasedView view = buildView(viewName);
+		/**
+		 * 应用声明周期函数，也就是调用View对象的初始化函数和Spring用于切入bean创建的
+		 *  Processor和Aware函数
+		 */
 		View result = applyLifecycleMethods(viewName, view);
+		// 检查view的准确性，这里默认始终返回true
 		return (view.checkResource(locale) ? result : null);
 	}
 
@@ -544,28 +560,32 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @see #loadView(String, java.util.Locale)
 	 */
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+		// 对于InternalResourceViewResolver而言，其返回的View对象的具体类型是InternalResourceView
 		Class<?> viewClass = getViewClass();
 		Assert.state(viewClass != null, "No view class");
-
+		// 使用反射生成InternalResourceView对象实例
 		AbstractUrlBasedView view = (AbstractUrlBasedView) BeanUtils.instantiateClass(viewClass);
+		//根据前缀和后缀拼接视图路径信息
 		view.setUrl(getPrefix() + viewName + getSuffix());
-
+        // 设置View的contentType属性
 		String contentType = getContentType();
 		if (contentType != null) {
 			view.setContentType(contentType);
 		}
-
+		// 设置contextAttribute和attributeMap等属性
 		view.setRequestContextAttribute(getRequestContextAttribute());
 		view.setAttributesMap(getAttributesMap());
-
+		// pathVariables表示request请求url中的属性，这里主要是设置是否将这些属性暴露到视图中
 		Boolean exposePathVariables = getExposePathVariables();
 		if (exposePathVariables != null) {
 			view.setExposePathVariables(exposePathVariables);
 		}
+		// 这里设置的是是否将Spring的bean暴露在视图中，以供给前端调用
 		Boolean exposeContextBeansAsAttributes = getExposeContextBeansAsAttributes();
 		if (exposeContextBeansAsAttributes != null) {
 			view.setExposeContextBeansAsAttributes(exposeContextBeansAsAttributes);
 		}
+		// 设置需要暴露给前端页面的bean名称
 		String[] exposedContextBeanNames = getExposedContextBeanNames();
 		if (exposedContextBeanNames != null) {
 			view.setExposedContextBeanNames(exposedContextBeanNames);
@@ -590,6 +610,8 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	protected View applyLifecycleMethods(String viewName, AbstractUrlBasedView view) {
 		ApplicationContext context = getApplicationContext();
 		if (context != null) {
+			// 对生成的View对象应用初始化方法，主要包括InitializingBean.afterProperties()和一些
+			// Processor，Aware方法
 			Object initialized = context.getAutowireCapableBeanFactory().initializeBean(view, viewName);
 			if (initialized instanceof View) {
 				return (View) initialized;

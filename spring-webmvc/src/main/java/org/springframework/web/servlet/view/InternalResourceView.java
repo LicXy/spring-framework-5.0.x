@@ -142,20 +142,28 @@ public class InternalResourceView extends AbstractUrlBasedView {
 		 */
 		exposeModelAsRequestAttributes(model, request);
 
-		// Expose helpers as request attributes, if any.
+		//提供的一个hook方法，默认是空实现，用于用户进行request属性的自定义使用
 		exposeHelpers(request);
 
 		// 确定请求分配器的路径
 		String dispatcherPath = prepareForRendering(request, response);
 
-		//获取目标资源的RequestDispatcher
+		/**
+		 *  获取当前request的RequestDispatcher对象，该对象有两个方法：include()和forward()，
+		 *  用于对当前的request进行转发，其实也就是将当前的request转发到另一个url，这里的另一个
+		 *  url就是要解析的视图地址，也就是说进行视图解析的时候请求的对于文件的解析实际上相当于
+		 *  构造了另一个（文件）请求，在该请求中对文件内容进行渲染，从而得到最终的文件。这里的
+		 *  include()方法表示将目标文件引入到当前文件中，与jsp中的include标签作用相同；
+		 *  forward()请求则表示将当前请求转发到另一个请求中，也就是目标文件路径，这种转发并不会
+		 *  改变用户浏览器地址栏的请求地址。
+		 */
 		RequestDispatcher rd = getRequestDispatcher(request, dispatcherPath);
 		if (rd == null) {
 			throw new ServletException("Could not get RequestDispatcher for [" + getUrl() +
 					"]: Check that the corresponding file exists within your web application archive!");
 		}
 
-		// 如果已经包含或响应已经提交，则执行包含，否则转发
+		// 判断当前是否为include请求，如果是，则调用RequestDispatcher.include()方法进行文件引入
 		if (useInclude(request, response)) {
 			response.setContentType(getContentType());
 			if (logger.isDebugEnabled()) {
