@@ -999,6 +999,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 				/**
 				 * 3. 执行HandlerExecutionChain中的拦截器
+				 * [ 责任链执行预处理方法，实则是将请求交给注册的请求拦截器执行]
 				 */
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
@@ -1017,6 +1018,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 
 				applyDefaultViewName(processedRequest, mv);
+				//[责任链执行后处理方法，实则是将请求交给注册的请求拦截器执行]
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {

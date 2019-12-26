@@ -150,11 +150,13 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 			logger.debug("Initializing servlet '" + getServletName() + "'");
 		}
 
-		// Set bean properties from init parameters.
+		//PropertyValues: 获取Web.xml里面的servlet的init-param（web.xml）
 		PropertyValues pvs = new ServletConfigPropertyValues(getServletConfig(), this.requiredProperties);
 		if (!pvs.isEmpty()) {
 			try {
+				//BeanWrapper: 封装了bean的行为，提供了设置和获取属性值，它有对应的BeanWrapperImpl
 				BeanWrapper bw = PropertyAccessorFactory.forBeanPropertyAccess(this);
+				//ResourceLoader:可以根据一个资源地址加载文件资源。classpath:这种方式指定SpringMVC框架bean配置文件的来源
 				ResourceLoader resourceLoader = new ServletContextResourceLoader(getServletContext());
 				bw.registerCustomEditor(Resource.class, new ResourceEditor(resourceLoader, getEnvironment()));
 				initBeanWrapper(bw);
@@ -229,10 +231,13 @@ public abstract class HttpServletBean extends HttpServlet implements Environment
 
 			Set<String> missingProps = (!CollectionUtils.isEmpty(requiredProperties) ?
 					new HashSet<>(requiredProperties) : null);
-
+			//获取当前Servlet在web.xml中配置的名字,返回一个枚举对象
 			Enumeration<String> paramNames = config.getInitParameterNames();
+			//遍历
 			while (paramNames.hasMoreElements()) {
+				//获取name,也就是web.xml中的param-name里的值:contextConfigLocation
 				String property = paramNames.nextElement();
+				//根据name获取值,也就是web.xml中的param-value里的值:classpath:SpringMvc.xml
 				Object value = config.getInitParameter(property);
 				addPropertyValue(new PropertyValue(property, value));
 				if (missingProps != null) {
