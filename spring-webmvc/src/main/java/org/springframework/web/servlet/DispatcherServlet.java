@@ -582,9 +582,12 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
-
+		/**
+		 * 这里是对所有的处理映射器(HandlerMapping)进行注册, 跟处理器器没有关系, 别搞混了
+		 * 后面处理器(HandlerMethod)的获取是通过处理映射器(HandlerMapping)去操作的
+		 */
 		if (this.detectAllHandlerMappings) {
-			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
+			//在ApplicationContext中找到所有HandlerMappings，包括祖先上下文
 			Map<String, HandlerMapping> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class, true, false);
 			if (!matchingBeans.isEmpty()) {
@@ -1210,8 +1213,11 @@ public class DispatcherServlet extends FrameworkServlet {
 					logger.trace("Testing handler map [" + hm + "] in DispatcherServlet with name '" + getServletName() + "'");
 				}
 				/**
-				 * 遍历所有的HandlerMapping, 根据Request获取到合适的HandlerMapping, 并包装为HandlerExecutionChain执行链
+				 * 1.遍历所有的HandlerMapping,根据Request获取到合适的HandlerMapping
+				 * 2.利用HandlerMapping通过请求信息获取Handler处理器并包装为HandlerExecutionChain执行链
+				 *
 				 * {@link AbstractHandlerMapping#getHandler(HttpServletRequest)}
+				 * hm  ==>  RequestMappingInfoHandlerMapping
 				 */
 				HandlerExecutionChain handler = hm.getHandler(request);
 				if (handler != null) {
