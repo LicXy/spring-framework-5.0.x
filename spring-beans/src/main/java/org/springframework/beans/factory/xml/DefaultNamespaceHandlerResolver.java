@@ -140,7 +140,10 @@ public class DefaultNamespaceHandlerResolver implements NamespaceHandlerResolver
 				}
 				//初始化类
 				NamespaceHandler namespaceHandler = (NamespaceHandler) BeanUtils.instantiateClass(handlerClass);
-				//调用自定义的NamespaceHandler的初始化方法
+				/**
+				 * 调用自定义的NamespaceHandler的初始化方法
+				 * SpringMvc: {@link org.springframework.web.servlet.config.MvcNamespaceHandler#init()}
+				 */
 				namespaceHandler.init();
 				//将该handler记录在缓存中,以便下次调用该handler可以直接获取,不用再次转换
 				handlerMappings.put(namespaceUri, namespaceHandler);
