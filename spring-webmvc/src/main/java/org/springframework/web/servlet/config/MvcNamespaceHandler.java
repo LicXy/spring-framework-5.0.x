@@ -33,6 +33,8 @@ public class MvcNamespaceHandler extends NamespaceHandlerSupport {
 	public void init() {
 		/**
 		 * 将标签名称与对应解析器关联
+		 *
+		 * 第一次尝试获取MvcNamespaceHandler时会调用该初始化方法进行初始化
 		 */
 		registerBeanDefinitionParser("annotation-driven", new AnnotationDrivenBeanDefinitionParser());
 		registerBeanDefinitionParser("default-servlet-handler", new DefaultServletHandlerBeanDefinitionParser());
