@@ -604,7 +604,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 * 对bean进行填充.将各个属性值注入,其中,可能存在依赖于其他bean的属性,则会递归初始化bean
 			 */
 			populateBean(beanName, mbd, instanceWrapper);
-			//调用初始化方法,比如init-method(在调用初始化方法之前执行后处理器)
+			/**
+			 * =========>  调用初始化方法,比如init-method(在调用初始化方法之前执行后处理器)   <===========  重点
+			 */
 			exposedObject = initializeBean(beanName, exposedObject, mbd);
 		}
 		catch (Throwable ex) {
