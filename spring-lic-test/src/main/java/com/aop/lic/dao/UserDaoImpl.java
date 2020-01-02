@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 public class UserDaoImpl implements UserDao {
 	@Override
 	public void query() {
-		System.out.println("模拟查询...");
+		System.out.println("Dao层:模拟查询...");
 	}
 }

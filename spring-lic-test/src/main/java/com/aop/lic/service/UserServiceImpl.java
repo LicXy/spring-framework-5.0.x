@@ -11,16 +11,6 @@ public class UserServiceImpl implements UserService {
 	@Autowired
 	private UserDao userDao;
 
-	public UserServiceImpl() {
-		System.out.println("UserServiceImpl: 构造方法执行");
-	}
-
-
-	@PostConstruct
-	public void init(){
-		System.out.println("UserServiceImpl: 自定义初始化方法执行");
-	}
-
 	@Override
 	public void query() {
 		userDao.query();

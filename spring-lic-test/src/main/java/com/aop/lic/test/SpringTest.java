@@ -11,7 +11,7 @@ public class SpringTest {
 		AnnotationConfigApplicationContext annotationConfigApplicationContext =
 				new AnnotationConfigApplicationContext(AppConfig.class);
 		UserService userService = annotationConfigApplicationContext.getBean(UserService.class);
-	/*	annotationConfigApplicationContext.getBean("");*/
+		/*UserService userService = (UserService) annotationConfigApplicationContext.getBean("userService");*/
 		userService.query();
 
 	}
