@@ -98,9 +98,13 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		 * 获取所有的增强
 		 */
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
-		//寻找所有的增强中只用于bean的增强应用
+		/**
+		 * 寻找所有的增强中只用于bean的增强应用
+		 */
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
-		//模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展)
+		/**
+		 * 模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展)
+		 */
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
 			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
@@ -109,7 +113,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	}
 
 	/**
-	 * Find all candidate Advisors to use in auto-proxying.
+	 *  查找要在自动代理中使用的所有候选顾问
 	 * @return the List of candidate Advisors
 	 */
 	protected List<Advisor> findCandidateAdvisors() {
@@ -131,6 +135,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
+			/**
+			 *
+			 */
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

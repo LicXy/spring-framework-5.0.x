@@ -81,19 +81,24 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> buildAspectJAdvisors() {
-		//因为解析会很消耗性能，所以Spring会使用aspectBeanNames保存解析结果
+		//先尝试从缓存中获取
 		List<String> aspectNames = this.aspectBeanNames;
 
 		if (aspectNames == null) {
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
 				if (aspectNames == null) {
+					/**
+					 * advisors集合存储容器中所有的切面类中定义的增强/通知Advice (注意是增强/通知, 没有切入点)
+					 */
 					List<Advisor> advisors = new ArrayList<>();
 					aspectNames = new ArrayList<>();
 					//获取所有的beanName
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
-					//遍历所有的beanName,找出对应的增强方法
+					/**
+					 * 遍历所有的beanName,找出添加了@Aspect的类, 进行解析,注册   <===== 重点
+					 */
 					for (String beanName : beanNames) {
 						//不合法的bean则略过,由子类定义规则,默认返回true
 						if (!isEligibleBean(beanName)) {
@@ -106,7 +111,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						if (beanType == null) {
 							continue;
 						}
-						//如果存在@Aspect注解的类
+						/**
+						 * 如果存在@Aspect注解的类
+						 */
 						if (this.advisorFactory.isAspect(beanType)) {
 							aspectNames.add(beanName);
 							//保存bean类型以及@Aspect注解信息
@@ -115,6 +122,10 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								/**
+								 * classAdvisors集合存储的是该切面类中的所有的增强/通知
+								 * {@link ReflectiveAspectJAdvisorFactory#getAdvisors(MetadataAwareAspectInstanceFactory)}
+								 */
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								//如果bean是单例，则缓存bean的增强器
 								if (this.beanFactory.isSingleton(beanName)) {
@@ -126,7 +137,9 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 								}
 								advisors.addAll(classAdvisors);
 							}
-							//切面创建模式非单例
+							/**
+							 * 切面创建模式非单例
+							 */
 							else {
 								//如果切面是非单例，但是bean是单例，抛出异常
 								if (this.beanFactory.isSingleton(beanName)) {
