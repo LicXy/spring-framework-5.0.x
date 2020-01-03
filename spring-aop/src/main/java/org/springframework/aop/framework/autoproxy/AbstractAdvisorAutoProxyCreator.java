@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.springframework.aop.Advisor;
 import org.springframework.aop.TargetSource;
+import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -104,6 +105,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
 		/**
 		 * 模版方法，由子类拓展增强器(用作子类对已经查找完成的增强器进行拓展)
+		 * {@link AspectJAwareAdvisorAutoProxyCreator#extendAdvisors(java.util.List)}
 		 */
 		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
