@@ -23,6 +23,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import org.springframework.aop.AfterAdvice;
+import org.springframework.aop.framework.ReflectiveMethodInvocation;
 
 /**
  * Spring AOP advice wrapping an AspectJ after advice method.
@@ -40,13 +41,21 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 		super(aspectJBeforeAdviceMethod, pointcut, aif);
 	}
 
-
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
+			/**
+			 * 调用MethodInvocation#proceed()方法, 先执行其他增强
+			 *  {@link ReflectiveMethodInvocation#proceed()}
+			 */
 			return mi.proceed();
 		}
 		finally {
+			/**
+			 * 当所有拦截器执行完成之后,执行后置增强
+			 * 后置增强的执行是在finally块中,因此, 及时目标方法出现异常, 后置通知也会执行
+			 * 同理也可以知道, 异常增强方法是在catch块中执行的
+			 */
 			invokeAdviceMethod(getJoinPointMatch(), null, null);
 		}
 	}

@@ -26,6 +26,8 @@ import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import org.springframework.aop.ProxyMethodInvocation;
+import org.springframework.aop.aspectj.AspectJAfterAdvice;
+import org.springframework.aop.framework.adapter.MethodBeforeAdviceInterceptor;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.lang.Nullable;
@@ -158,30 +160,41 @@ public class ReflectiveMethodInvocation implements ProxyMethodInvocation, Clonea
 	@Override
 	@Nullable
 	public Object proceed() throws Throwable {
-		//	We start with an index of -1 and increment early.
+		/**
+		 * currentInterceptorIndex: 当前需要执行拦截器在集合中位置, 默认为-1
+		 * 当最后一个拦截器执行完之后, 回调该方法才会执行切入点方法
+		 */
 		if (this.currentInterceptorIndex == this.interceptorsAndDynamicMethodMatchers.size() - 1) {
+			/**
+			 * 执行切入点
+			 */
 			return invokeJoinpoint();
 		}
-
-		Object interceptorOrInterceptionAdvice =
-				this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
+		/**
+		 * 根据索引获取到拦截器; 每调用一次proceed(), 会获取到下一个拦截器,然后进行处理
+		 */
+		Object interceptorOrInterceptionAdvice = this.interceptorsAndDynamicMethodMatchers.get(++this.currentInterceptorIndex);
+		/**
+		 * 如果获取到的增强是内部框架类
+		 */
 		if (interceptorOrInterceptionAdvice instanceof InterceptorAndDynamicMethodMatcher) {
 			// Evaluate dynamic method matcher here: static part will already have
 			// been evaluated and found to match.
-			InterceptorAndDynamicMethodMatcher dm =
-					(InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
+			InterceptorAndDynamicMethodMatcher dm = (InterceptorAndDynamicMethodMatcher) interceptorOrInterceptionAdvice;
 			if (dm.methodMatcher.matches(this.method, this.targetClass, this.arguments)) {
 				return dm.interceptor.invoke(this);
 			}
 			else {
-				// Dynamic matching failed.
-				// Skip this interceptor and invoke the next in the chain.
+				//如果动态匹配失败,则跳过该拦截器,执行下一个(递归)
 				return proceed();
 			}
 		}
 		else {
-			// It's an interceptor, so we just invoke it: The pointcut will have
-			// been evaluated statically before this object was constructed.
+			/**
+			 * 执行每个拦截器, 会先执行前置通知,再执行后置通知
+			 * 后置增强: {@link AspectJAfterAdvice#invoke(org.aopalliance.intercept.MethodInvocation)}
+			 * 前置增强: {@link MethodBeforeAdviceInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)}
+			 */
 			return ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(this);
 		}
 	}

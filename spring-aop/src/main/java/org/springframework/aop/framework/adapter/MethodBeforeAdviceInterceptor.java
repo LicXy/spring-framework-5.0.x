@@ -23,6 +23,7 @@ import org.aopalliance.intercept.MethodInvocation;
 
 import org.springframework.aop.BeforeAdvice;
 import org.springframework.aop.MethodBeforeAdvice;
+import org.springframework.aop.framework.ReflectiveMethodInvocation;
 import org.springframework.util.Assert;
 
 /**
@@ -52,7 +53,14 @@ public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeA
 
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
+		/**
+		 * 前置增强执行
+		 */
 		this.advice.before(mi.getMethod(), mi.getArguments(), mi.getThis());
+		/**
+		 * 调用MethodInvocation#proceed()执行切入点方法
+		 * {@link ReflectiveMethodInvocation#proceed()}
+		 */
 		return mi.proceed();
 	}
 
