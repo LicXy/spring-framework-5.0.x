@@ -45,7 +45,7 @@ public class AspectJAfterAdvice extends AbstractAspectJAdvice
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		try {
 			/**
-			 * 调用MethodInvocation#proceed()方法, 先执行其他增强
+			 * 如果是后置增强,则先调用MethodInvocation#proceed()方法, 执行其他增强, 等其他所有增强和切入点方法执行完成后,再执行后置增强
 			 *  {@link ReflectiveMethodInvocation#proceed()}
 			 */
 			return mi.proceed();

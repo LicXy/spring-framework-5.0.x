@@ -50,11 +50,11 @@ public class MethodBeforeAdviceInterceptor implements MethodInterceptor, BeforeA
 		this.advice = advice;
 	}
 
-
+	
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		/**
-		 * 前置增强执行
+		 * 如果是前置通知,则先执行增强方法, 再调用proceed()去获取其他拦截器
 		 */
 		this.advice.before(mi.getMethod(), mi.getArguments(), mi.getThis());
 		/**
