@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProxyTest {
 
-	@Pointcut("execution(* com.aop.lic.service.UserServiceImpl.query(..))")
+	@Pointcut("execution(* com.aop.lic.service.UserService.query(..))")
 	public void pointcut(){
 		//该方法作用: 注解载体
 	}

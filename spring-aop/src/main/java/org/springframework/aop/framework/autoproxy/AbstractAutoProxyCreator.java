@@ -33,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.aop.Advisor;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.TargetSource;
+import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.AopInfrastructureBean;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.aop.framework.ProxyProcessorSupport;
@@ -345,12 +346,16 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			return bean;
 		}
 		//advisedBeans的key为cacheKey，value为boolean类型，表示是否进行过代理
-		//已经处理过的bean,不需要再次进行处理，节省时间
+		//对于已经处理过的bean,不需要再次进行处理，节省时间
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
-		//给定的bean类是否已经代表一个基础设施类,基础设施类不应代理,或者配置了指定bean不需要自动代理
-		//如果一个bean继承自Advice、Pointcut、Advisor、AopInfrastructureBean 或者 带有@Aspect注解，或被Ajc（AspectJ编译器）编译都会被认定为内部基础设置类
+		/**
+		 * 如果目标类代表一个基础设施类,基础设施类不应代理,或者配置了指定bean不需要自动代理
+		 * isInfrastructureClass(): 如果目标类继承自Advice、Pointcut、Advisor、AopInfrastructureBean
+		 * 		或者带有@Aspect注解，或被Ajc（AspectJ编译器）编译都会被认定为内部基础设置类, 从而该目标类将会跳过扩展
+		 * shouldSkip(): 判断目标bean是否需要跳过{@link AspectJAwareAdvisorAutoProxyCreator#shouldSkip(java.lang.Class, java.lang.String)}
+		 */
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;

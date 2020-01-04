@@ -162,22 +162,25 @@ class CglibAopProxy implements AopProxy, Serializable {
 		}
 
 		try {
+			//获取目标类Class对象
 			Class<?> rootClass = this.advised.getTargetClass();
 			Assert.state(rootClass != null, "Target class must be available for creating a CGLIB proxy");
-
+			//设置目标类为代理父类(CGLIB基于继承实现代理)
 			Class<?> proxySuperClass = rootClass;
+			//如果目标类也是CGLIB代理类,则设目标类的父类为代理父类
 			if (ClassUtils.isCglibProxyClass(rootClass)) {
 				proxySuperClass = rootClass.getSuperclass();
+				//获取目标类的所有接口
 				Class<?>[] additionalInterfaces = rootClass.getInterfaces();
 				for (Class<?> additionalInterface : additionalInterfaces) {
 					this.advised.addInterface(additionalInterface);
 				}
 			}
 
-			// Validate the class, writing log messages as necessary.
+			// 验证类，根据需要编写日志消息
 			validateClassIfNecessary(proxySuperClass, classLoader);
 
-			// Configure CGLIB Enhancer...
+			//创建并配置CGLIB增强实例
 			Enhancer enhancer = createEnhancer();
 			if (classLoader != null) {
 				enhancer.setClassLoader(classLoader);
@@ -186,11 +189,14 @@ class CglibAopProxy implements AopProxy, Serializable {
 					enhancer.setUseCache(false);
 				}
 			}
+			//设置父类
 			enhancer.setSuperclass(proxySuperClass);
 			enhancer.setInterfaces(AopProxyUtils.completeProxiedInterfaces(this.advised));
 			enhancer.setNamingPolicy(SpringNamingPolicy.INSTANCE);
 			enhancer.setStrategy(new ClassLoaderAwareUndeclaredThrowableStrategy(classLoader));
-
+			/**
+			 * 获取回调类信息,即增强
+			 */
 			Callback[] callbacks = getCallbacks(rootClass);
 			Class<?>[] types = new Class<?>[callbacks.length];
 			for (int x = 0; x < types.length; x++) {
@@ -201,7 +207,10 @@ class CglibAopProxy implements AopProxy, Serializable {
 					this.advised.getConfigurationOnlyCopy(), this.fixedInterceptorMap, this.fixedInterceptorOffset));
 			enhancer.setCallbackTypes(types);
 
-			// Generate the proxy class and create a proxy instance.
+			/**
+			 * 生成代理类并创建代理实例
+			 * {@link ObjenesisCglibAopProxy#createProxyClassAndInstance(org.springframework.cglib.proxy.Enhancer, org.springframework.cglib.proxy.Callback[])}
+			 */
 			return createProxyClassAndInstance(enhancer, callbacks);
 		}
 		catch (CodeGenerationException | IllegalArgumentException ex) {
@@ -671,22 +680,31 @@ class CglibAopProxy implements AopProxy, Serializable {
 				// Get as late as possible to minimize the time we "own" the target, in case it comes from a pool...
 				target = targetSource.getTarget();
 				Class<?> targetClass = (target != null ? target.getClass() : null);
+				/**
+				 * 1. 获取拦截器链
+				 */
 				List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 				Object retVal;
-				// Check whether we only have one InvokerInterceptor: that is,
-				// no real advice, but just reflective invocation of the target.
+				//检查我们是否只有一个InvokerInterceptor：没有真正的增强，只是对目标的发射调用。
 				if (chain.isEmpty() && Modifier.isPublic(method.getModifiers())) {
-					// We can skip creating a MethodInvocation: just invoke the target directly.
-					// Note that the final invoker must be an InvokerInterceptor, so we know
-					// it does nothing but a reflective operation on the target, and no hot
-					// swapping or fancy proxying.
+					/**
+					 * 跳过创建MethodInvocation的方法：直接调用目标即可
+					 * 请注意，最终的调用者必须是InvokerInterceptor，因此我们知道它仅对目标执行反射操作，并且不执行热交换或奇特代理
+					 */
 					Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
 					retVal = methodProxy.invoke(target, argsToUse);
 				}
 				else {
-					// We need to create a method invocation...
+					/**
+					 * 2.创建一个方法调用,执行目标方法
+					 *   (1) new CglibMethodInvocation():CglibMethodInvocation实例继承ReflectiveMethodInvocation
+					 *   (2) proceed():此处与JDK动态代理一样,都是通过ReflectiveMethodInvocation#proceed()方法完成增强的织入
+					 */
 					retVal = new CglibMethodInvocation(proxy, target, method, args, targetClass, chain, methodProxy).proceed();
 				}
+				/**
+				 * 3. 处理返回值
+				 */
 				retVal = processReturnType(proxy, target, method, retVal);
 				return retVal;
 			}

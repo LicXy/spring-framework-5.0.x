@@ -54,11 +54,15 @@ class ObjenesisCglibAopProxy extends CglibAopProxy {
 
 	@Override
 	protected Object createProxyClassAndInstance(Enhancer enhancer, Callback[] callbacks) {
+		//创建代理类
 		Class<?> proxyClass = enhancer.createClass();
 		Object proxyInstance = null;
 
 		if (objenesis.isWorthTrying()) {
 			try {
+				/**
+				 * 实例化代理类
+				 */
 				proxyInstance = objenesis.newInstance(proxyClass, enhancer.getUseCache());
 			}
 			catch (Throwable ex) {
@@ -84,6 +88,10 @@ class ObjenesisCglibAopProxy extends CglibAopProxy {
 		}
 
 		((Factory) proxyInstance).setCallbacks(callbacks);
+		/**
+		 * 代理类的执行方法
+		 * {@link DynamicAdvisedInterceptor#intercept(java.lang.Object, java.lang.reflect.Method, java.lang.Object[], org.springframework.cglib.proxy.MethodProxy)}
+		 */
 		return proxyInstance;
 	}
 
