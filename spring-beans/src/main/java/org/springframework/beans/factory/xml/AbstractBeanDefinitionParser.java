@@ -61,7 +61,7 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 	@Nullable
 	public final BeanDefinition parse(Element element, ParserContext parserContext) {
 		/**
-		 * 解析element
+		 * 1.解析element
 		 * {@link AbstractSingleBeanDefinitionParser#parseInternal(Element, ParserContext)}
 		 */
 		AbstractBeanDefinition definition = parseInternal(element, parserContext);
@@ -80,9 +80,13 @@ public abstract class AbstractBeanDefinitionParser implements BeanDefinitionPars
 						aliases = StringUtils.trimArrayElements(StringUtils.commaDelimitedListToStringArray(name));
 					}
 				}
-				//将AbstractBeanDefinition装换成BeanDefinitionHolder并注册
+				/**
+				 * 2. 将AbstractBeanDefinition封装成BeanDefinitionHolder并注册
+				 */
 				BeanDefinitionHolder holder = new BeanDefinitionHolder(definition, id, aliases);
-				//注册
+				/**
+				 * 3. 注册
+				 */
 				registerBeanDefinition(holder, parserContext.getRegistry());
 				if (shouldFireEvents()) {
 					//需要通知监听器进行处理

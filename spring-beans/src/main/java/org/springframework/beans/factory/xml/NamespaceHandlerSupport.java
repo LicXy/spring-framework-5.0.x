@@ -71,7 +71,7 @@ public abstract class NamespaceHandlerSupport implements NamespaceHandler {
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
 		/**
-		 * 寻找解析器并进行解析操作,在自定义handler中未重写父类中parse()方法,
+		 * 寻找解析器并进行解析操作,在自定义handler中并没有重写父类中parse()方法,
 		 * 因此此处是调用父类AbstractBeanDefinitionParser中的parse()方法
 		 */
 		BeanDefinitionParser parser = findParserForElement(element, parserContext);

@@ -25,12 +25,12 @@ public class SpringTest {
 	/*	AnnotationConfigApplicationContext annotationConfigApplicationContext11 =
 				new AnnotationConfigApplicationContext("com.ioc.lic");
 		UserService userService11 = (UserService) annotationConfigApplicationContext11.getBean("userService");
-		userService11.query();*/
-
+		userService11.query();
+*/
 		/**
 		 * 2. 应用上下文初始化方式(三)
 		 */
-		/*ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("springConf.xml");
+	/*	ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("springConf.xml");
 		UserService userService1 = (UserService) applicationContext1.getBean("userService");
 		userService1.query();*/
 		/**
