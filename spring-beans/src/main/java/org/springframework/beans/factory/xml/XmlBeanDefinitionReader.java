@@ -399,10 +399,14 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	protected int doLoadBeanDefinitions(InputSource inputSource, Resource resource)
 			throws BeanDefinitionStoreException {
 		try {
-			//将配置文件解析为一个Document实例,以便下面对Bean定义进行解析
+			/**
+			 * 将配置文件解析为一个Document实例,以便下面对Bean定义进行解析
+			 */
 			Document doc = doLoadDocument(inputSource, resource);
-			//上一个方法中当把文件装换为Document后,接下来就是对bean的提取及注册
-			//注册bean定义
+			/**
+			 * 上一个方法中当把文件装换为Document后,接下来就是对bean的提取及注册
+			 * 注册bean定义
+			 */
 			return registerBeanDefinitions(doc, resource);
 		}
 		//异常捕获
@@ -465,7 +469,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 		if (validationModeToUse != VALIDATION_AUTO) {
 			return validationModeToUse;
 		}
-		//如果未指定就使用自动检测
+		/**
+		 * 如果未指定就使用自动检测
+		 */
 		int detectedMode = detectValidationMode(resource);
 		if (detectedMode != VALIDATION_AUTO) {
 			return detectedMode;
@@ -529,7 +535,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
-		//实例化BeanDefinitionDocumentReader接口
+		//实例化DefaultBeanDefinitionDocumentReader; 由BeanDefinitionDocumentReader接口接收
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
 		//记录统计前BeanDefinition的加载个数
 		int countBefore = getRegistry().getBeanDefinitionCount();

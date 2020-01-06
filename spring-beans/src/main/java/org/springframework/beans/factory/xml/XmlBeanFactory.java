@@ -80,7 +80,9 @@ public class XmlBeanFactory extends DefaultListableBeanFactory {
 		 * 并调用AbstractBeanFactory类中的setParentBeanFactory()方法设置双亲IoC容器
 		 */
 		super(parentBeanFactory);
-		//加载bean,该方法返回int类型数值(返回创建bean定义的数量)
+		/**
+		 * 加载bean,该方法返回int类型数值(返回创建bean定义的数量)
+		 */
 		this.reader.loadBeanDefinitions(resource);
 	}
 

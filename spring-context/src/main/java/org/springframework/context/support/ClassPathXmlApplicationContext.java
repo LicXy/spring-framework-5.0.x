@@ -156,7 +156,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 	 * given Class. For full flexibility, consider using a GenericApplicationContext
 	 * with an XmlBeanDefinitionReader and a ClassPathResource argument.
 	 * @param path relative (or absolute) path within the class path
-	 * @param clazz the class to load resources with (basis for the given paths)
+	 * @param clazz 用来加载资源的类（给定路径的基础）
 	 * @throws BeansException if context creation failed
 	 * @see org.springframework.core.io.ClassPathResource#ClassPathResource(String, Class)
 	 * @see org.springframework.context.support.GenericApplicationContext

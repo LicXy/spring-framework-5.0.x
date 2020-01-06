@@ -557,11 +557,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 	{@link org.springframework.context.annotation.ConfigurationClassPostProcessor#processConfigBeanDefinitions} 方法
 				 * 	对配置类进行解析(如果该注解bean是配置类则在这个方法里完成了包扫描操作)          <--------------- 重要
 
-				 * --> 注意:
-				 * 	一般情况下, 此时beanFactory中只注册了这一个BeanFactoryPostProcessor类-->ConfigurationClassPostProcessor
+				 * 注意:
+				 * 	 1. 一般情况下, 此时beanFactory中只注册了这一个BeanFactoryPostProcessor类-->ConfigurationClassPostProcessor
 				 * 	在{@link AnnotationConfigUtils#registerAnnotationConfigProcessors(org.springframework.beans.factory.support.BeanDefinitionRegistry)}中注册的
-				 * --> 注意:
-				 *  注解模式下,此时BeanDefinitionMap中含有6个Spring内部处理器类, 其中通过ConfigurationClassPostProcessor类来解析配置类,完成包扫描,bean注册等操作
+				 *   2. 注解模式下,此时BeanDefinitionMap中含有6个Spring内部处理器类, 其中通过ConfigurationClassPostProcessor类来解析配置类,完成包扫描,bean注册等操作
 				 * 	然而, 在xml配置模式下, 此时BeanDefinitionMap只有自定义配置的BeanDefinition信息
 				 *
 				 * <----- XML配置模式  ----->
