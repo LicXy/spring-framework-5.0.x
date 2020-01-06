@@ -832,7 +832,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 						"Validation of bean definition failed", ex);
 			}
 		}
-        //判断该beanName是否已经注册 ,根据不同的设置记性处理; (不愧是Spring, 在我模拟的SpringIOC中我管它那么多, 直接覆盖 ,简单粗暴)
+        //判断该beanName是否已经注册 ,根据不同的设置进行处理; (不愧是Spring, 在我模拟的SpringIOC中我管它那么多, 直接覆盖 ,简单粗暴)
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		if (existingDefinition != null) {
 			//如果对应的BeanName已经注册且在配置中配置了bean不允许被覆盖,则抛出异常
@@ -871,14 +871,16 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		else {
 			/**
 			 * 检查这个工厂的bean创建阶段是否已经开始，即 是否有任何bean被标记为同时创建。
-			 * 如果bean工厂的bean创建已经开始, 那么就不能在注册bean的定义信息; 因为创建bean时, 会迭代beanDefinitionMap集合,
-			 * 一旦开始迭代, 则不允许在向该map集合中插入元素
+			 * 如果bean工厂的bean创建已经开始, 那么就不能在beanDefinitionNames集合中添加beanName; 因为创建bean时, 会迭代beanDefinitionNames集合,获取beanName，获取BeanDefinition创建bean实例
+			 * 一旦开始迭代, 则不允许在向该list集合中插入元素, 但是beanDefinitionMap集合可以, 因为beanDefinitionMap集合并没有被迭代,而是通过beanName获取BeanDefinition信息
 			 */
-			//处于bean创建阶段
 			if (hasBeanCreationStarted()) {
+				/**
+				 * 处于bean创建阶段
+				 */
 				//因为beanDefinitionMap是全局变量,这里肯定会存在并发访问的情况
 				synchronized (this.beanDefinitionMap) {
-					//注册beanDefinitionv
+					//注册beanDefinition信息
 					this.beanDefinitionMap.put(beanName, beanDefinition);
 					//创建新的集合来更新存储已注册beanName的beanDefinitionNames集合
 					List<String> updatedDefinitions = new ArrayList<>(this.beanDefinitionNames.size() + 1);
@@ -893,11 +895,13 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 					}
 				}
 			}
-			//仍处于启动注册阶段
+			/**
+			 * 仍处于注册阶段
+			 */
 			else {
-				//将beanName和bean的定义信息加入beanDefinitionMap集合
+				//将beanName和bean的定义信息加入beanDefinitionMap集合  <== 重点
 				this.beanDefinitionMap.put(beanName, beanDefinition);
-				//bean定义名称列表，按注册顺序排列
+				//bean定义名称列表，按注册顺序排列   <== 重点
 				this.beanDefinitionNames.add(beanName);
 				//手动注册的单例程序的名称列表，按注册顺序排列
 				this.manualSingletonNames.remove(beanName);

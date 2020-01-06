@@ -14,10 +14,10 @@ public class SpringTest {
 		/**
 		 * 1. 应用上下文初始化方式(一: Java配置类方式)
 		 */
-		AnnotationConfigApplicationContext annotationConfigApplicationContext =
+	/*	AnnotationConfigApplicationContext annotationConfigApplicationContext =
 				new AnnotationConfigApplicationContext(AppConfig.class);
 		UserService userService = (UserService) annotationConfigApplicationContext.getBean("userService");
-		userService.query();
+		userService.query();*/
 
 		/**
 		 * 1. 应用上下文初始化方式(二: 配置文件方式)
@@ -36,8 +36,8 @@ public class SpringTest {
 		/**
 		 * 3(已过时). 应用上下文初始化方式(四)
 		 */
-		/*XmlBeanFactory bf = new XmlBeanFactory(new ClassPathResource("springConf.xml"));
+		XmlBeanFactory bf = new XmlBeanFactory(new ClassPathResource("springConf.xml"));
 		UserService userService2 = (UserService) bf.getBean("userService");
-		userService2.query();*/
+		userService2.query();
 	}
 }
