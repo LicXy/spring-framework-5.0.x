@@ -128,7 +128,9 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		 */
 		register(annotatedClasses);
 
-		//环境刷新
+		/**
+		 * 应用环境刷新
+		 */
 		refresh();
 	}
 
