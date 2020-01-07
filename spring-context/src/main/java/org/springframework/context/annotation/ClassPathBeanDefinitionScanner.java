@@ -274,11 +274,17 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 		//存储扫描到的BeanDefinition信息
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 
-		//循环遍历包路径信息,进行解析,注册
+		/**
+		 * 循环遍历包路径信息,进行解析,注册
+		 */
 		for (String basePackage : basePackages) {
-			//扫描出该包路径下左右的候选Bean
+			/**
+			 * 扫描出该包路径下左右的候选Bean
+			 */
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
-			//对所有的候选bean进行解析
+			/**
+			 * 对所有的候选bean进行解析
+			 */
 			for (BeanDefinition candidate : candidates) {
 				//获取Scope属性
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);

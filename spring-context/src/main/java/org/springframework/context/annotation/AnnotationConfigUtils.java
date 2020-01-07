@@ -186,6 +186,9 @@ public class AnnotationConfigUtils {
 			//根据spring内部提供的class实例化ConfigurationClassPostProcessor
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);
+			/**
+			 * 注册后处理器类
+			 */
 			beanDefs.add(registerPostProcessor(registry, def, CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 		}
 
@@ -246,6 +249,9 @@ public class AnnotationConfigUtils {
 			BeanDefinitionRegistry registry, RootBeanDefinition definition, String beanName) {
 
 		definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+		/**
+		 * 调用注册中心的registerBeanDefinition()方法注册BeanDefinition
+		 */
 		registry.registerBeanDefinition(beanName, definition);
 		return new BeanDefinitionHolder(definition, beanName);
 	}
