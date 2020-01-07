@@ -312,23 +312,31 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @throws BeanDefinitionStoreException in case of loading or parsing errors
 	 */
 	public int loadBeanDefinitions(EncodedResource encodedResource) throws BeanDefinitionStoreException {
-		//1.非空判断及日志记录
+		/**
+		 * 1.非空判断及日志记录
+		 */
 		Assert.notNull(encodedResource, "EncodedResource must not be null");
 		if (logger.isInfoEnabled()) {
 			logger.info("Loading XML bean definitions from " + encodedResource);
 		}
-		//2.通过set集合来记录当前正在加载的资源
+		/**
+		 * 2.通过set集合来记录当前正在加载的资源
+		 */
 		Set<EncodedResource> currentResources = this.resourcesCurrentlyBeingLoaded.get();
 		if (currentResources == null) {
 			currentResources = new HashSet<>(4);
 			this.resourcesCurrentlyBeingLoaded.set(currentResources);
 		}
-		//将encodedResource添加到currentResources集合中,如果添加失败,则抛出异常
+		/**
+		 * 2.1 将encodedResource添加到currentResources集合中,如果添加失败,则抛出异常
+		 */
 		if (!currentResources.add(encodedResource)) {
 			throw new BeanDefinitionStoreException(
 					"Detected cyclic loading of " + encodedResource + " - check your import definitions!");
 		}
-		//3.加载bean
+		/**
+		 * 3.加载bean
+		 */
 		try {
 			//通过encodedResource获取已经封装的Resource对象并再次从Resource中获取其中的inputStream
 			InputStream inputStream = encodedResource.getResource().getInputStream();

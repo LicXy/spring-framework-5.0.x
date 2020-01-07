@@ -144,6 +144,9 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
 		setConfigLocations(configLocations);
 
 		if (refresh) {
+			/**
+			 * 调用父类的refresh()方法 <经典的模板方法模式>
+			 */
 			refresh();
 		}
 	}
