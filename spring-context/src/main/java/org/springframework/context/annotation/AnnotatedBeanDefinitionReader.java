@@ -218,7 +218,9 @@ public class AnnotatedBeanDefinitionReader {
 	 */
 	<T> void doRegisterBean(Class<T> annotatedClass, @Nullable Supplier<T> instanceSupplier, @Nullable String name,
 			@Nullable Class<? extends Annotation>[] qualifiers, BeanDefinitionCustomizer... definitionCustomizers) {
-		//封装注解bean的定义信息
+		/**
+		 * 创建AnnotatedGenericBeanDefinition实例, 用于封装注解Bean的定义信息
+		 */
 		AnnotatedGenericBeanDefinition abd = new AnnotatedGenericBeanDefinition(annotatedClass);
 
 		if (this.conditionEvaluator.shouldSkip(abd.getMetadata())) {
@@ -250,8 +252,10 @@ public class AnnotatedBeanDefinitionReader {
 		for (BeanDefinitionCustomizer customizer : definitionCustomizers) {
 			customizer.customize(abd);
 		}
-		//将AnnotatedGenericBeanDefinition(bean定义信息)和beanName封装到BeanDefinitionHolder中
-		//		//目的: 封装更多的bean定义信息(bean定义信息, 别名信息, beanName等), 将bean定义信息与beanName进行封装传递
+		/**
+		 * 将AnnotatedGenericBeanDefinition(bean定义信息)和beanName封装到BeanDefinitionHolder中
+		 * 目的: 封装更多的bean定义信息(bean定义信息, 别名信息, beanName等), 将bean定义信息与beanName进行封装传递
+		 */
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		//没看懂. . .
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);

@@ -147,6 +147,7 @@ final class PostProcessorRegistrationDelegate {
 			 *    {@link PostProcessorRegistrationDelegate#invokeBeanFactoryPostProcessors(Collection, BeanDefinitionRegistry)}
 			 *
 			 */
+
 			for (String ppName : postProcessorNames) {
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
 					currentRegistryProcessors.add(beanFactory.getBean(ppName, BeanDefinitionRegistryPostProcessor.class));
@@ -163,6 +164,9 @@ final class PostProcessorRegistrationDelegate {
 			 * 循环遍历currentRegistryProcessors,.执行BeanDefinitionRegistryPostProcessor中的postProcessBeanDefinitionRegistry方法
 			 * {@link BeanDefinitionRegistryPostProcessor#postProcessBeanDefinitionRegistry(BeanDefinitionRegistry)}
 			 * 该方法时BeanDefinitionRegistryPostProcessor接口继承BeanFactoryPostProcessor接口后增加的方法
+			 *    ===================================================================================================================================
+			 *    =======此处将激活org.springframework.context.annotation.ConfigurationClassPostProcessor#postProcessBeanDefinitionRegistry方法======
+			 *    ===================================================================================================================================
 			 */
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			//currentRegistryProcessors集合中的类遍历执行完postProcessBeanDefinitionRegistry()方法后,清空该集合,以便后面进行重复使用

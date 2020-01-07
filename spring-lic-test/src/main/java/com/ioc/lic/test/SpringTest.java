@@ -14,22 +14,21 @@ public class SpringTest {
 		/**
 		 * 1. 应用上下文初始化方式(一: Java配置类方式)
 		 */
-		/*AnnotationConfigApplicationContext annotationConfigApplicationContext =
+		AnnotationConfigApplicationContext annotationConfigApplicationContext =
 				new AnnotationConfigApplicationContext(AppConfig.class);
 		UserService userService = (UserService) annotationConfigApplicationContext.getBean("userService");
-		userService.query();*/
-
+		userService.query();
 		/**
 		 * 1. 应用上下文初始化方式(二: 包路径配置方式)
 		 */
-		AnnotationConfigApplicationContext annotationConfigApplicationContext11 =
+		/*AnnotationConfigApplicationContext annotationConfigApplicationContext11 =
 				new AnnotationConfigApplicationContext("com.ioc.lic");
 		UserService userService11 = (UserService) annotationConfigApplicationContext11.getBean("userService");
-		userService11.query();
+		userService11.query();*/
 		/**
 		 * 2. 应用上下文初始化方式(三)
 		 */
-	/*	ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("springConf.xml");
+		/*ApplicationContext applicationContext1 = new ClassPathXmlApplicationContext("springConf.xml");
 		UserService userService1 = (UserService) applicationContext1.getBean("userService");
 		userService1.query();*/
 		/**
