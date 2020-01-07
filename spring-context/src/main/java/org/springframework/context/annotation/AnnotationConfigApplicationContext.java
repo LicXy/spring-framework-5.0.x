@@ -147,7 +147,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		 */
 		scan(basePackages);
 		/**
-		 * 3. 刷新应用上下文信息..
+		 * 3. 刷新应用上下文信息.
 		 */
 		refresh();
 	}
