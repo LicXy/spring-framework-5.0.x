@@ -178,23 +178,38 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	@Nullable
 	protected Object getSingleton(String beanName, boolean allowEarlyReference) {
-		//1.检查缓存中是否存在实例,存在的话就直接返回
+		/**
+		 * 1.检查缓存中是否存在目标bean的实例,存在的话就直接返回
+		 */
 		Object singletonObject = this.singletonObjects.get(beanName);
-		//2.如果缓存中没有,并且当前该实例在正在创建中,则锁定全局变量进行处理
+		/**
+		 * 2.如果缓存中没有,并且当前该实例在正在创建中,则锁定全局变量进行处理
+		 */
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
 			synchronized (this.singletonObjects) {
-				//如果此bean正在加载,但是可以从earlySingletonObjects中获取,就返回该对象;否则进行创建(单例模式循环依赖解决)
+				/**
+				 * 如果此bean正在加载,但是可以从earlySingletonObjects中获取到目标bean,就返回该对象;否则进行创建
+				 */
 				singletonObject = this.earlySingletonObjects.get(beanName);
 				if (singletonObject == null && allowEarlyReference) {
-					//当某些方法需要提前初始化的时候会调用addSingletonFactory方法将对应的ObjectFactory初始化策略存储在singletonFactories(缓存中)
+					/**
+					 * 当某些方法需要提前初始化的时候会调用addSingletonFactory方法将对应的ObjectFactory初始化策略存储在singletonFactories(缓存中)
+					 * 如果早期目标bean实例获取失败, 则尝试从缓存中获取创建目标bean的工厂bean(循环依赖解决)
+					 */
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
-						//调用预先设定的getObject方法,创建singletonObject
+						/**
+						 * 调用预先设定的getObject方法,创建singletonObject
+						 */
 						singletonObject = singletonFactory.getObject();
-						//记录在earlySingletonObjects缓存中,避免循环依赖
-						//(不等bean创建完成就将创建bean的ObjectFactory提早曝光加入缓存中,一旦下一个bean创建需要依赖上一个bean,则直接使用ObjectFactory)
+						/**
+						 * 记录在earlySingletonObjects缓存中,避免循环依赖
+						 * (不等bean创建完成就将创建bean的ObjectFactory提早曝光加入缓存中,一旦下一个bean创建需要依赖上一个bean,则直接使用ObjectFactory)
+						 */
 						this.earlySingletonObjects.put(beanName, singletonObject);
-						//singletonFactories:用于保存BeanName和创建bean工厂之间的关系,与BeanName相关的bean已经被创建,所以需要从singletonFactories移除BeanName
+						/**
+						 * singletonFactories:用于保存BeanName和创建工厂bean之间的关系,与BeanName相关的bean已经被创建,所以需要从singletonFactories移除BeanName
+						 */
 						this.singletonFactories.remove(beanName);
 					}
 				}
@@ -213,9 +228,13 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 */
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
-		//全局变量需要同步
+		/**
+		 * 全局变量需要同步
+		 */
 		synchronized (this.singletonObjects) {
-			//首先检查对应的bean是否已经加载过,因为singleton模式其实就是复用已创建的bean,所以这一步是必须的
+			/**
+			 * 首先检查对应的bean是否已经加载过,因为singleton模式其实就是复用已创建的bean,所以这一步是必须的
+			 */
 			Object singletonObject = this.singletonObjects.get(beanName);
 			//如果为空,才进行singleton的bean初始化
 			if (singletonObject == null) {
@@ -227,7 +246,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				if (logger.isDebugEnabled()) {
 					logger.debug("Creating shared instance of singleton bean '" + beanName + "'");
 				}
-				//加载单例前 记录加载状态: 将beanName放入singletonsCurrentlyInCreation属性中,并且从创建检查中排除的bean的名称
+				/**
+				 * 加载单例前 记录加载状态: 将beanName放入singletonsCurrentlyInCreation属性中,并且从创建检查中排除的bean的名称
+				 */
 				beforeSingletonCreation(beanName);
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);

@@ -589,7 +589,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 
 			/**
-			 * 为避免后期循环依赖,可以在bean初始化完成前将创建实例的ObjectFactory加入工厂
+			 * 为避免后期循环依赖,可以在bean初始化完成前将创建实例的ObjectFactory加入缓存
 			 *
 			 * 对bean再一次依赖引用,主要应用于SmartInstantiationAware BeanPostProcessor,
 			 * 其中我们熟知的AOP就是在这里将advice动态织入bean中,若没有则直接返回bean,不做任何处理
@@ -1356,11 +1356,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		// Give any InstantiationAwareBeanPostProcessors the opportunity to modify the
-		// state of the bean before properties are set. This can be used, for example,
-		// to support styles of field injection.
-		// 应用后处理器InstantiationAwareBeanPostProcessor，调用其postProcessAfterInstantiation方法
-		// 在注入属性前修改bean状态,如果方法中返回false的话，可以终止后面代码运行，直接返回
+		/**
+		 *  应用后处理器InstantiationAwareBeanPostProcessor，调用其postProcessAfterInstantiation方法
+		 *  在注入属性前修改bean状态,如果方法中返回false的话，可以终止后面代码运行，直接返回
+		 */
 		boolean continueWithPropertyPopulation = true;
 
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
@@ -1375,7 +1374,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}
 			}
 		}
-		//如果后处理器发出停止填充命令,则终止后续的执行
+		/**
+		 * 如果后处理器发出停止填充命令,则终止后续的执行
+		 */
 		if (!continueWithPropertyPopulation) {
 			return;
 		}
@@ -1427,7 +1428,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		if (pvs != null) {
-			//将属性应用到bean中
+			/**
+			 * 将属性应用到bean中
+			 */
 			applyPropertyValues(beanName, mbd, bw, pvs);
 		}
 	}
@@ -1447,7 +1450,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		String[] propertyNames = unsatisfiedNonSimpleProperties(mbd, bw);
 		for (String propertyName : propertyNames) {
 			if (containsBean(propertyName)) {
-				//递归初始化相关的bean
+				/**
+				 * 递归初始化相关的bean
+				 */
 				Object bean = getBean(propertyName);
 				pvs.add(propertyName, bean);
 				//注册依赖bean

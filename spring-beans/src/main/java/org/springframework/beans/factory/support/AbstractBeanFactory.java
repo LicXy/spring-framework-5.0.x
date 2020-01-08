@@ -267,11 +267,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 
 			/**
-			 * 3.返回对应的实例,有时候存在诸如BeanFactory的情况并不是直接返回实例本身而是返回指定方法的实例
+			 * 3.返回对应的实例,有时候存在诸如FactoryBean的情况并不是直接返回实例本身而是返回指定方法的实例
 			 *
 			 * 无论是直接取单例的bean，还是创建单例、多例、自定义生命周期的bean，
 			 * 都会经过bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);这个方法
-			 * 主要是由于存在  诸如BeanFactory的情况并不是直接返回实例本身而是返回指定方法的实例  的情况
+			 * 主要是由于存在  诸如FactoryBean的情况并不是直接返回实例本身而是返回指定方法的实例  的情况
 			 */
 
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
@@ -398,14 +398,24 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
-						//创建bean前将beanName放入prototypesCurrentlyInCreation中
+						/**
+						 * 创建bean前将beanName放入prototypesCurrentlyInCreation中
+						 */
 						beforePrototypeCreation(beanName);
+						/**
+						 * 创建目标bean(原型)
+						 */
 						prototypeInstance = createBean(beanName, mbd, args);
 					}
 					finally {
-						//创建bean前将beanName从prototypesCurrentlyInCreation中移除
+						/**
+						 * 创建bean前将beanName从prototypesCurrentlyInCreation中移除
+						 */
 						afterPrototypeCreation(beanName);
 					}
+					/**
+					 * FactoryBean情况处理
+					 */
 					bean = getObjectForBeanInstance(prototypeInstance, name, beanName, mbd);
 				}
 				//指定scope上实例化bean
@@ -1724,7 +1734,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 		}
 
-		//如果beanInstance实例不是FactoryBean，或者指定名称是FactoryBean的解引用，也就是普通的bean调用，则直接返回当前的beanInstance实例
+		/**
+		 * 如果beanInstance实例不是FactoryBean，或者指定名称是FactoryBean的解引用，也就是普通的bean调用，则直接返回当前的beanInstance实例
+		 */
 		if (!(beanInstance instanceof FactoryBean) || BeanFactoryUtils.isFactoryDereference(name)) {
 			//!(beanInstance instanceof FactoryBean)       说明该bean为普通bean对象;
 			//BeanFactoryUtils.isFactoryDereference(name)  说明期望返回一个beanFactory对象
