@@ -948,6 +948,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
+					/**
+					 * 触发实现SmartInstantiationAwareBeanPostProcessor接口实现的getEarlyBeanReference()方法, 对目标进行
+					 * 修改, 并返回目标bean; [ps: Spring充分的利用各种后处理器, 在Bean的初始化不同过程对尝试目标bean进行不同的处理]
+					 */
 					SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
 					exposedObject = ibp.getEarlyBeanReference(exposedObject, beanName);
 				}
@@ -1061,6 +1065,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	protected void applyMergedBeanDefinitionPostProcessors(RootBeanDefinition mbd, Class<?> beanType, String beanName) {
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
 			if (bp instanceof MergedBeanDefinitionPostProcessor) {
+				/**
+				 * 对于实现MergedBeanDefinitionPostProcessor接口并重写postProcessMergedBeanDefinition方法的后处理器类
+				 * 进行激活,触发postProcessMergedBeanDefinition()方法, 对目标bean进行修改
+				 */
 				MergedBeanDefinitionPostProcessor bdp = (MergedBeanDefinitionPostProcessor) bp;
 				bdp.postProcessMergedBeanDefinition(mbd, beanType, beanName);
 			}
@@ -1146,7 +1154,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (instanceSupplier != null) {
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
-		//1.如果工厂方法不为空,则使用工厂方法初始化策略
+		/**
+		 * 1.如果工厂方法不为空,则使用工厂方法初始化策略
+		 */
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
@@ -1156,7 +1166,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		boolean autowireNecessary = false;
 		if (args == null) {
 			synchronized (mbd.constructorArgumentLock) {
-				//一个类有多个构造函数,每个构造函数都有不同的参数,所以调用前需要先根据参数锁定构造函数或对应的工厂方法
+				/**
+				 * 一个类有多个构造函数,每个构造函数都有不同的参数,所以调用前需要先根据参数锁定构造函数或对应的工厂方法
+				 */
 				if (mbd.resolvedConstructorOrFactoryMethod != null) {
 					resolved = true;
 					autowireNecessary = mbd.constructorArgumentsResolved;
@@ -1164,12 +1176,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 		/**
-		 * 如果已经解析过,则使用解析好的构造函数方法不需要再次锁定
+		 *  如果已经解析过,则使用解析好的构造函数方法不需要再次锁定
 		 */
 		if (resolved) {
 			if (autowireNecessary) {
 				/**
-				 * 构造函数自动注入
+				 * 使用合适的构造函数进行自动注入
 				 */
 				return autowireConstructor(beanName, mbd, null, null);
 			}
@@ -1187,7 +1199,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
-			//构造函数自动注入
+			//使用符合条件的构造函数进行自动注入
 			return autowireConstructor(beanName, mbd, ctors, args);
 		}
 
@@ -1258,6 +1270,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (beanClass != null && hasInstantiationAwareBeanPostProcessors()) {
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
 				if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
+					/**
+					 * 确定构造方法的逻辑由SmartInstantiationAwareBeanPostProcessor#determineCandidateConstructors方法实现
+					 */
 					SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
 					Constructor<?>[] ctors = ibp.determineCandidateConstructors(beanClass, beanName);
 					if (ctors != null) {
