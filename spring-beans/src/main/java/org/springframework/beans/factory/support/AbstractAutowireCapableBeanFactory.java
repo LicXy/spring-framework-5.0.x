@@ -1163,7 +1163,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				}
 			}
 		}
-		//如果已经解析过,则使用解析好的构造函数方法不需要再次锁定
+		/**
+		 * 如果已经解析过,则使用解析好的构造函数方法不需要再次锁定
+		 */
 		if (resolved) {
 			if (autowireNecessary) {
 				/**
@@ -1179,7 +1181,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			}
 		}
 
-		//需要根据参数解析构造函数
+		/**
+		 * 需要根据参数解析构造函数
+		 */
 		Constructor<?>[] ctors = determineConstructorsFromBeanPostProcessors(beanClass, beanName);
 		if (ctors != null || mbd.getResolvedAutowireMode() == AUTOWIRE_CONSTRUCTOR ||
 				mbd.hasConstructorArgumentValues() || !ObjectUtils.isEmpty(args)) {
