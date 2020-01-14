@@ -51,6 +51,9 @@ public class SourceFilteringListener implements GenericApplicationListener, Smar
 	 */
 	public SourceFilteringListener(Object source, ApplicationListener<?> delegate) {
 		this.source = source;
+		/**
+		 * SourceFilteringListener中维护的代理可能为适配器
+		 */
 		this.delegate = (delegate instanceof GenericApplicationListener ?
 				(GenericApplicationListener) delegate : new GenericApplicationListenerAdapter(delegate));
 	}
@@ -106,6 +109,9 @@ public class SourceFilteringListener implements GenericApplicationListener, Smar
 			throw new IllegalStateException(
 					"Must specify a delegate object or override the onApplicationEventInternal method");
 		}
+		/**
+		 * 通过监听适配器调用对应监听器的onApplicationEvent()方法
+		 */
 		this.delegate.onApplicationEvent(event);
 	}
 

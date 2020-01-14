@@ -55,6 +55,9 @@ public class GenericApplicationListenerAdapter implements GenericApplicationList
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
+		/**
+		 * GenericApplicationListenerAdapter适配器中维护着真正的监听器
+		 */
 		this.delegate.onApplicationEvent(event);
 	}
 
