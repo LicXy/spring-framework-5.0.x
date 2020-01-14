@@ -676,7 +676,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		wac.setServletConfig(getServletConfig());
 		wac.setNamespace(getNamespace());
 		/**
-		 * 向容器中添加监听器, 监听容器初始化结束事件(事件对象:ContextRefreshListener)
+		 * 向容器中添加监听器, 监听容器初始化结束事件(事件对象:ContextRefreshListener)   <=== 重点
+		 * ContextRefreshListener为FrameworkServlet的内部类
 		 */
 		wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
 
@@ -1158,6 +1159,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
+			/**
+			 * 外部类名.this.方法名  ==> 在内部类中调用外部类方法
+			 */
 			FrameworkServlet.this.onApplicationEvent(event);
 		}
 	}
