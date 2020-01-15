@@ -1108,14 +1108,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			LiveBeansView.unregisterApplicationContext(this);
 
 			try {
-				// Publish shutdown event.
+				//发布上下文关闭事件
 				publishEvent(new ContextClosedEvent(this));
 			}
 			catch (Throwable ex) {
 				logger.warn("Exception thrown from ApplicationListener handling ContextClosedEvent", ex);
 			}
 
-			// Stop all Lifecycle beans, to avoid delays during individual destruction.
+			//停止所有生命周期bean,以避免在单个销毁期间造成延迟。
 			if (this.lifecycleProcessor != null) {
 				try {
 					this.lifecycleProcessor.onClose();
@@ -1125,22 +1125,28 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				}
 			}
 
-			// Destroy all cached singletons in the context's BeanFactory.
+			/**
+			 * 销毁上下文的BeanFactory中所有缓存的单例
+			 */
 			destroyBeans();
 
-			// Close the state of this context itself.
+			/**
+			 * 关闭此上下文本身的状态
+			 */
 			closeBeanFactory();
 
-			// Let subclasses do some final clean-up if they wish...
+			/**
+			 * 由子类实现, 让子类完成相关资源的清理
+			 */
 			onClose();
 
-			// Reset local application listeners to pre-refresh state.
+			//将本地应用程序侦听器重置为预刷新状态
 			if (this.earlyApplicationListeners != null) {
 				this.applicationListeners.clear();
 				this.applicationListeners.addAll(this.earlyApplicationListeners);
 			}
 
-			// Switch to inactive.
+			//切换为非活动状态
 			this.active.set(false);
 		}
 	}

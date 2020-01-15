@@ -20,7 +20,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.DefaultListable;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
 import static org.junit.Assert.*;
@@ -35,7 +35,7 @@ public class ScopedProxyAutowireTests {
 
 	@Test
 	public void testScopedProxyInheritsAutowireCandidateFalse() {
-		DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
+		DefaultListable bf = new DefaultListable();
 		new XmlBeanDefinitionReader(bf).loadBeanDefinitions(
 				qualifiedResource(ScopedProxyAutowireTests.class, "scopedAutowireFalse.xml"));
 
@@ -49,7 +49,7 @@ public class ScopedProxyAutowireTests {
 
 	@Test
 	public void testScopedProxyReplacesAutowireCandidateTrue() {
-		DefaultListableBeanFactory bf = new DefaultListableBeanFactory();
+		DefaultListable bf = new DefaultListable();
 		new XmlBeanDefinitionReader(bf).loadBeanDefinitions(
 				qualifiedResource(ScopedProxyAutowireTests.class, "scopedAutowireTrue.xml"));
 

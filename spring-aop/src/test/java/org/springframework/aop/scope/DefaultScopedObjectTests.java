@@ -18,7 +18,7 @@ package org.springframework.aop.scope;
 
 import org.junit.Test;
 
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.Configurable;
 
 import static org.mockito.BDDMockito.*;
 
@@ -34,7 +34,7 @@ public class DefaultScopedObjectTests {
 
 
 	@Test(expected = IllegalArgumentException.class)
-	public void testCtorWithNullBeanFactory() throws Exception {
+	public void testCtorWithNull() throws Exception {
 		new DefaultScopedObject(null, GOOD_BEAN_NAME);
 	}
 
@@ -54,7 +54,7 @@ public class DefaultScopedObjectTests {
 	}
 
 	private static void testBadTargetBeanName(final String badTargetBeanName) {
-		ConfigurableBeanFactory factory = mock(ConfigurableBeanFactory.class);
+		Configurable factory = mock(Configurable.class);
 		new DefaultScopedObject(factory, badTargetBeanName);
 	}
 

@@ -109,7 +109,13 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	 */
 	@Override
 	public void contextDestroyed(ServletContextEvent event) {
+		/**
+		 * 关闭应用上下文
+		 */
 		closeWebApplicationContext(event.getServletContext());
+		/**
+		 * 清理相应bean
+		 */
 		ContextCleanupListener.cleanupAttributes(event.getServletContext());
 	}
 
