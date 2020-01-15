@@ -18,6 +18,9 @@ public class SpringTest {
 				new AnnotationConfigApplicationContext(AppConfig.class);
 		UserService userService = (UserService) annotationConfigApplicationContext.getBean("userService");
 		userService.query();
+		/**
+		 * 手动注册关闭钩子
+		 */
 		annotationConfigApplicationContext.registerShutdownHook();
 		/**
 		 * 1. 应用上下文初始化方式(二: 包路径配置方式)
