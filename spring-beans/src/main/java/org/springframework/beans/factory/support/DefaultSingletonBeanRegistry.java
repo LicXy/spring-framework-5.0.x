@@ -201,6 +201,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					if (singletonFactory != null) {
 						/**
 						 * 调用预先设定的getObject方法,创建singletonObject, 在获取依赖bean实例时会调用相关后处理器对bean进行处理
+						 * {@link AbstractAutowireCapableBeanFactory#getEarlyBeanReference(String, RootBeanDefinition, Object)}
 						 */
 						singletonObject = singletonFactory.getObject();
 						/**

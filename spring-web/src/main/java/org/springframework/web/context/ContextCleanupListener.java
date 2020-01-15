@@ -60,6 +60,7 @@ public class ContextCleanupListener implements ServletContextListener {
 	 * @see DisposableBean#destroy()
 	 */
 	static void cleanupAttributes(ServletContext servletContext) {
+		// 获取ServletContext中的属性名集合
 		Enumeration<String> attrNames = servletContext.getAttributeNames();
 		while (attrNames.hasMoreElements()) {
 			String attrName = attrNames.nextElement();
@@ -67,6 +68,9 @@ public class ContextCleanupListener implements ServletContextListener {
 				Object attrValue = servletContext.getAttribute(attrName);
 				if (attrValue instanceof DisposableBean) {
 					try {
+						/**
+						 * 销毁相应的Bean
+						 */
 						((DisposableBean) attrValue).destroy();
 					}
 					catch (Throwable ex) {

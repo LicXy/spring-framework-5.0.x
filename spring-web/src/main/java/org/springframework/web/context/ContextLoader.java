@@ -258,6 +258,7 @@ public class ContextLoader {
 	 * @see #CONFIG_LOCATION_PARAM
 	 */
 	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
+		// 在servletContext中查找是否已经存在根应用上下文
 		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
 			throw new IllegalStateException(
 					"Cannot initialize context because there is already a root application context present - " +
@@ -275,22 +276,34 @@ public class ContextLoader {
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.
 			if (this.context == null) {
+				/**
+				 * 创建一个应用上下文实例
+				 */
 				this.context = createWebApplicationContext(servletContext);
 			}
 			if (this.context instanceof ConfigurableWebApplicationContext) {
 				ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
+				/**
+				 *  应用上下文（IOC容器）还未被刷新,refresh是IOC容器初始化的入口
+				 */
 				if (!cwac.isActive()) {
 					// The context has not yet been refreshed -> provide services such as
 					// setting the parent context, setting the application context id, etc
 					if (cwac.getParent() == null) {
-						// The context instance was injected without an explicit parent ->
-						// determine parent for root web application context, if any.
+						// 加载父容器，这里的loadParentContext是一个模板方法，默认返回null
+						// 目的是留给子类实现
 						ApplicationContext parent = loadParentContext(servletContext);
 						cwac.setParent(parent);
 					}
+					/**
+					 *  配置并刷新应用上下文
+					 * 	这里会找到web.xml中配置的contextConfigLocation属性，作为应用上下文的配置路径
+					 * 	最后会调用ApplicationContext的refresh()方法初始化应用上下文
+					 */
 					configureAndRefreshWebApplicationContext(cwac, servletContext);
 				}
 			}
+			// 将当前的应用上下文缓存在servletContext中
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
@@ -309,7 +322,7 @@ public class ContextLoader {
 				long elapsedTime = System.currentTimeMillis() - startTime;
 				logger.info("Root WebApplicationContext: initialization completed in " + elapsedTime + " ms");
 			}
-
+			// 返回应用上下文
 			return this.context;
 		}
 		catch (RuntimeException ex) {
@@ -406,6 +419,9 @@ public class ContextLoader {
 		}
 
 		customizeContext(sc, wac);
+		/**
+		 * 调用refresh()方法, 开始初始化IOC容器环境
+		 */
 		wac.refresh();
 	}
 
@@ -522,6 +538,7 @@ public class ContextLoader {
 		servletContext.log("Closing Spring root WebApplicationContext");
 		try {
 			if (this.context instanceof ConfigurableWebApplicationContext) {
+				// 关闭IOC容器
 				((ConfigurableWebApplicationContext) this.context).close();
 			}
 		}
@@ -533,6 +550,7 @@ public class ContextLoader {
 			else if (ccl != null) {
 				currentContextPerThread.remove(ccl);
 			}
+			// 移除缓存
 			servletContext.removeAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 		}
 	}

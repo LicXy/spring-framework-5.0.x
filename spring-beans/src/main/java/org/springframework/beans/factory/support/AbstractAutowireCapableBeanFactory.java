@@ -1803,7 +1803,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		else {
 			/**
-			 * 对特殊的bean处理:Aware,BeanClassLoaderAware,BeanFactoryAware
+			 * 1. 对特殊的bean处理, 目标bean实现Aware,BeanClassLoaderAware,BeanFactoryAware接口, 则会调用相应方法进行处理
 			 */
 			invokeAwareMethods(beanName, bean);
 		}
